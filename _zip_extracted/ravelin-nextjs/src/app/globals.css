@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  background-color: #FFFFFF;
+  color: #0F172A;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.blue-gradient-box {
+  background: linear-gradient(135deg, #1E3A8A 0%, #1D4ED8 52%, #0284C7 100%);
+}
+
+.blue-card-soft {
+  background: linear-gradient(180deg, #F0F7FF 0%, #FFFFFF 100%);
+  border: 1px solid #BFDBFE;
+}
+
+.blue-pill-gradient {
+  background: linear-gradient(90deg, #2563EB 0%, #0284C7 100%);
+}

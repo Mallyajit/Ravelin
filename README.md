@@ -1,45 +1,33 @@
-# Ravelin Network (`ravelin.network`) — Private RPC, Backrun Rebates & AI Firewall for Robinhood Chain
+# Ravelin Network (`ravelin.network`) — White & Royal Blue Edition (Next.js 14)
 
-A complete, investor-friendly, and builder-ready **Next.js 14 (App Router, TypeScript, Tailwind CSS)** web application and developer console modeled directly after [https://ordofi.network/](https://ordofi.network/) for **Robinhood Chain (Chain ID: 4663)**.
+A clean, investor-friendly, multi-page **Next.js 14 (App Router, TypeScript, Tailwind CSS)** application modeled on [https://ordofi.network/](https://ordofi.network/) for **Robinhood Chain (Chain ID: 4663)**.
+
+Designed with a **crisp White primary background (`#FFFFFF`)**, **Royal & Ocean Blue Gradient boxes (`#1E3A8A` → `#2563EB` → `#0284C7`)**, high-contrast slate typography, and **practical interactive tools with zero range sliders** (using exact numeric inputs, `+/-` steppers, and preset pill buttons).
 
 ---
 
-## Quick Setup Instructions for Gemini Copilot in Antigravity IDE
-
-If you are **Gemini Copilot inside Antigravity IDE**, run these exact steps in the integrated terminal to install, verify, and launch the project:
+## Quick Setup for Gemini Copilot in Antigravity IDE
 
 ```bash
-# 1. Install all dependencies
 npm install
-
-# 2. Copy the environment configuration
 cp .env.example .env.local
-
-# 3. Verify TypeScript & Next.js production build
 npm run build
-
-# 4. Start the local development server on http://localhost:3000
 npm run dev
 ```
 
 ---
 
-## Included Pages & Routes (All Links Verified)
+## Multi-Page Architecture (`src/app/`)
 
-1. **`/` (`src/app/page.tsx`) — Investor & Builder Home Page (Modeled on `ordofi.network`)**
-   - **Region: the sequencer**: Co-located AWS Nitro node next to the Robinhood Chain sequencer (`1 ms` median gateway response, `100 ms` blocks, orange-dot globe graphic, WASM + Nitro PCR0 state replay).
-   - **Three Core Pillars**: `◎ Private by default`, `⟲ Simulated first` (refuses reverts & AI retry loops before paying gas), `↺ Paid back` (`90%` of clearing price from 200ms backrun auctions returned to the user).
-   - **Measured, not claimed**: 6 live on-chain metric cards (`$7,473,107` delivered privately, `218,049` transactions, `$201,591` MEV & loop drains prevented, `90%` rebate share, `1,504` active agents & searchers, `$18,217.08` protocol revenue) with clickable on-chain verification modals and `RavelinVolumeLog` (`0x88B1…90E2`) attestation.
-   - **Revenue buys `$RVLN`**: 100% open-market token buyback breakdown (`430,215 RVLN` bought back across 5 swaps, latest swap `168,291 RVLN` at `0x0deb741e…9988f3`, token contract `0xfe2f…b167`).
-   - **One platform for everything that trades here**: 6 linked product modules (`⇄ Ravelin RPC`, `◈ Ravelin Auction`, `✓ Ravelin Validator`, `▤ Ravelin Data`, `≋ AI Firewall & Holding Pen`, `⚡ Agent & Searcher SDK`).
-   - **Why teams & investors route through Ravelin**: Side-by-side comparison (`A public endpoint alone` vs. `Shipping with Ravelin`).
-   - **Pay only for what you use**: 4 transparent pricing plans (`Free $0 forever`, `Builder $29/30 days`, `Pro $199/30 days [Most picked]`, `Dedicated $999/30 days`) + `Every plan includes` strip.
-   - **Built for your stack**: Copyable `curl`, `wscat`, TypeScript (`viem`), and Python (`web3.py`) snippets + 3 role cards (`Wallets & Investors`, `Terminals, AI Swarms & Indexers`, `Searchers`).
-2. **`/compare` (`src/app/compare/page.tsx`) — Live WASM & AWS Nitro PCR0 State Assertion Replay**
-   - Compares Robinhood Sequencer state hashes against Ravelin's independent Nitro node replay every 10 minutes.
-3. **`/revenue` (`src/app/revenue/page.tsx`) & `/api/revenue` (`src/app/api/revenue/route.ts`) — Public `$RVLN` Buyback & Treasury Ledger**
-   - Displays every on-chain `$RVLN` buyback transaction and serves live JSON telemetry at `GET /api/revenue`.
-4. **`/docs` (`src/app/docs/page.tsx`) — Gateway, Auction, Validator, Data & SDK Documentation**
-5. **`/pricing` (`src/app/pricing/page.tsx`) — Interactive Request Unit & Throughput Plans**
-6. **`/app` (`src/app/app/page.tsx`) — Interactive App Console**
-   - Live traffic metrics, API Key generator, AI Agent Firewall rules (`ArbSys` L2 + L1 blob gas cap, RocksDB duplicate cooldown), Holding Pen (`>$10k` human approval queue), Audit Logs, and Emergency Kill-Switch.
+1. **`/` (`src/app/page.tsx`) — Overview & Investor Trust Hub**
+   - **Blue Gradient Hero Box ("Region: the sequencer")**: Co-located AWS Nitro node (`1 ms` gateway response, `100 ms` blocks, 100% WASM state replay).
+   - **3 Visual Step Cards**: `◎ Private by default`, `⟲ Simulated first ($0 failed gas)`, `↺ Paid back (90% rebate)`.
+   - **Measured, Not Claimed**: 6 verifiable on-chain scorecards (`$7,473,107` delivered privately, `218,049` transactions, `$201,591` MEV & loop drains prevented, `90%` rebate share, `1,504` active wallets & searchers, `$18,217.08` protocol revenue).
+2. **`/tools` (`src/app/tools/page.tsx`) — Practical Interactive Workbench (No Sliders)**
+   - **Tool 1: 4-Stage Hardware Pipeline Simulator**: Test `NVDA/USDC`, `AAPL/USDC`, or `TSLA/USDC` swaps, AI retry loops, and `>$10k` Holding Pen orders with exact dollar inputs and preset pills.
+   - **Tool 2: Precision Firewall Policy Configurator (Zero Sliders)**: Set exact Hourly Spend Cap (`$100`–`$5,000/hr`), Duplicate Loop Cooldown (`10s`–`300s`), and Holding Pen Threshold (`$2,500`–`$25,000`) using numeric inputs, `+/-` steppers, and preset pills.
+   - **Tool 3: Investor 90% Backrun Rebate & Gas Savings Calculator** + **Holding Pen Approval Queue**.
+3. **`/compare` (`src/app/compare/page.tsx`) — Live WASM State Assertion & Latency Check**
+4. **`/revenue` (`src/app/revenue/page.tsx`) & `/api/revenue` (`src/app/api/revenue/route.ts`) — `$RVLN` Open-Market Buyback Explorer**
+5. **`/platform` (`src/app/platform/page.tsx`) — 6 Ecosystem Modules & Transparent Pricing (`Free`, `Builder`, `Pro`, `Dedicated`)**
+6. **`/docs` (`src/app/docs/page.tsx`) — Wallet Setup, `curl`/`wscat`, TypeScript/Python SDK & Searcher Docs**

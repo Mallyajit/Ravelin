@@ -1,14 +1,25 @@
 "use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
 
-const METRICS = [
+interface MetricCard {
+  title: string;
+  value: string;
+  sub: string;
+  badge: string;
+  badgeColor: string;
+  foot: string;
+  contract: string;
+}
+
+const METRICS: MetricCard[] = [
   {
     title: "Delivered privately",
     value: "$7,473,107",
     sub: "$19,509 in 24h · since Sep 2",
     badge: "▲ 4% (30d)",
-    badgeColor: "text-allow bg-allow/10",
+    badgeColor: "text-emerald-700 bg-emerald-50 border border-emerald-200",
     foot: "Peak $176k · Sep 23 · Zero public mempool exposure",
     contract: "0x88B1c409a21f9902e10490E2 (RavelinVolumeLog)",
   },
@@ -17,7 +28,7 @@ const METRICS = [
     value: "218,049",
     sub: "1,622 in 24h · delivered privately",
     badge: "0 Reverts Mined",
-    badgeColor: "text-emerald bg-emerald/10",
+    badgeColor: "text-blue-700 bg-blue-50 border border-blue-200",
     foot: "Peak 7,684/day · Sep 22 · Pre-simulated in Nitro TEE",
     contract: "0x88B1c409a21f9902e10490E2 (RavelinVolumeLog)",
   },
@@ -26,7 +37,7 @@ const METRICS = [
     value: "$201,591",
     sub: "0% front-run · 147 AI retry loops halted",
     badge: "100% Protected",
-    badgeColor: "text-allow bg-allow/10",
+    badgeColor: "text-emerald-700 bg-emerald-50 border border-emerald-200",
     foot: "Saved from failed gas & sandwich bots",
     contract: "0x44A9e102f8c31029b77c3104 (RavelinSettlement)",
   },
@@ -35,7 +46,7 @@ const METRICS = [
     value: "90%",
     sub: "to users · 5% apps · 5% protocol",
     badge: "Automatic Payout",
-    badgeColor: "text-amber bg-amber/10",
+    badgeColor: "text-amber-700 bg-amber-50 border border-amber-200",
     foot: "Paid in ETH or USDG immediately on settlement",
     contract: "0x44A9e102f8c31029b77c3104 (RavelinSettlement)",
   },
@@ -44,8 +55,8 @@ const METRICS = [
     value: "1,504",
     sub: "last 24h · 18,593 all time",
     badge: "Live Network",
-    badgeColor: "text-white bg-white/10",
-    foot: "Wallets, AI trading agents, and bonded backrun searchers",
+    badgeColor: "text-slate-700 bg-slate-100 border border-slate-200",
+    foot: "Wallets, AI trading swarms, and bonded backrun searchers",
     contract: "0x91D0f48c2291a87e4102b890 (RavelinRegistry)",
   },
   {
@@ -53,135 +64,155 @@ const METRICS = [
     value: "$18,217.08",
     sub: "fees since Sep 12 · 100% buys $RVLN",
     badge: "100% Buyback",
-    badgeColor: "text-emerald bg-emerald/10",
+    badgeColor: "text-emerald-700 bg-emerald-50 border border-emerald-200",
     foot: "Every dollar of net revenue buys $RVLN on the open market",
     contract: "0xfe2f49a188b1c03d9a82b167 ($RVLN Token)",
   },
 ];
 
 export default function HomePage() {
-  const [selectedMetric, setSelectedMetric] = useState<typeof METRICS[0] | null>(null);
+  const [selectedMetric, setSelectedMetric] = useState<MetricCard | null>(null);
 
   return (
-    <div className="space-y-24 pb-24">
-      {/* SECTION 1: REGION THE SEQUENCER */}
-      <section className="subtle-grid border-b border-white/10 pt-14 pb-20 px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-obsidian border border-white/15 text-xs font-mono text-amber">
-              <span className="w-2 h-2 rounded-full bg-amber inline-block" />
-              <span>Region: the sequencer · Chain ID 4663</span>
-            </div>
-
-            <h1 className="text-4xl sm:text-6xl font-bold tracking-tight text-white leading-[1.08]">
-              One node, in the same place as the chain, close to every block.
-            </h1>
-
-            <p className="text-base sm:text-lg text-neutral-300 leading-relaxed max-w-2xl">
-              Every request is answered from our own hardware-isolated AWS Nitro node—not a shared upstream. Whether you are a{" "}
-              <strong className="text-white">crypto investor trading tokenized stocks</strong> or a{" "}
-              <strong className="text-white">team running autonomous AI agents</strong>, your trades are private, simulated before they cost gas, and pay you back 90% of any backrun profit.
-            </p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-              <div className="bg-obsidian border border-white/10 rounded-xl p-5">
-                <div className="text-3xl sm:text-4xl font-bold text-amber font-mono">1 ms</div>
-                <div className="text-sm font-medium text-white mt-1">Median gateway response</div>
-                <p className="text-xs text-neutral-400 mt-1">
-                  Measured on the box that answers you. Blocks arrive every <span className="text-white font-mono">100 ms</span>; we see each one the moment it is sequenced.
-                </p>
-              </div>
-              <div className="bg-obsidian border border-white/10 rounded-xl p-5">
-                <div className="text-3xl sm:text-4xl font-bold text-emerald font-mono">100%</div>
-                <div className="text-sm font-medium text-white mt-1">State assertions verified</div>
-                <p className="text-xs text-neutral-400 mt-1">
-                  Blocks validated by our own WASM &amp; Nitro PCR0 replay of Robinhood&apos;s state assertions.{" "}
-                  <Link href="/compare" className="text-emerald underline">
-                    Their hash, our hash →
-                  </Link>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <Link href="/app" className="px-5 py-3 rounded-lg bg-amber text-black text-sm font-semibold hover:opacity-90">
-                Add Free RPC to Wallet →
-              </Link>
-              <Link href="/app" className="px-5 py-3 rounded-lg bg-obsidian border border-white/15 text-white text-sm font-medium hover:bg-surface">
-                Get an API Key
-              </Link>
-              <Link href="/compare" className="px-4 py-3 rounded-lg text-neutral-300 hover:text-white text-sm font-mono">
-                Live State Check (/compare) →
-              </Link>
-            </div>
-          </div>
-
-          <div className="lg:col-span-5">
-            <div className="bg-obsidian border border-white/10 rounded-2xl p-6 space-y-5">
-              <div className="flex items-center justify-between text-xs font-mono">
-                <span className="text-neutral-400">CO-LOCATION TOPOLOGY · US-EAST-1</span>
-                <span className="text-allow">● 0.8ms RTT</span>
-              </div>
-              <div className="p-6 rounded-xl bg-black border border-white/5 text-center space-y-3">
-                <div className="inline-flex items-center gap-4 px-4 py-3 rounded-xl bg-obsidian border border-amber/40">
-                  <div className="text-left">
-                    <div className="text-xs font-mono text-amber font-bold">● ROBINHOOD SEQUENCER</div>
-                    <div className="text-[11px] font-mono text-emerald mt-1">● RAVELIN NITRO NODE (1ms away)</div>
-                  </div>
-                </div>
-                <p className="text-xs text-neutral-400">
-                  Blocks validated by our own WASM replay of Robinhood&apos;s state assertions every 10 minutes.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-2.5 text-xs font-mono">
-                <div className="p-3 rounded-lg bg-black border border-white/10">
-                  <div className="text-neutral-500">ROBINHOOD HASH</div>
-                  <div className="text-white truncate mt-0.5">0x94c8e1a2...f07b</div>
-                </div>
-                <div className="p-3 rounded-lg bg-black border border-emerald/30">
-                  <div className="text-neutral-500">RAVELIN WASM HASH</div>
-                  <div className="text-emerald truncate mt-0.5">0x94c8e1a2...f07b ✓</div>
-                </div>
-              </div>
-            </div>
+    <div className="space-y-20 pb-20 pt-10 px-4 sm:px-6 max-w-6xl mx-auto">
+      {/* SECTION 1: HERO & REGION THE SEQUENCER */}
+      <section className="space-y-8">
+        <div className="max-w-3xl space-y-4">
+          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-xs font-semibold text-blue-800">
+            <span className="w-2 h-2 rounded-full bg-blue-600 inline-block animate-pulse" />
+            <span>Robinhood Chain Mainnet (ID 4663) · 100 ms Blocks</span>
+          </span>
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 leading-[1.12]">
+            Trade &amp; Run AI Agents on Robinhood Chain Without Losing Gas or Value.
+          </h1>
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+            Ravelin places a dedicated hardware node right next to the Robinhood Chain sequencer. Every transaction is{" "}
+            <strong className="text-slate-900">private by default</strong>,{" "}
+            <strong className="text-slate-900">simulated before it costs gas</strong>, and returns{" "}
+            <strong className="text-blue-700">90% of any backrun profit</strong> directly to your wallet.
+          </p>
+          <div className="flex flex-wrap gap-3 pt-1">
+            <Link
+              href="/tools"
+              className="px-6 py-3 rounded-xl blue-pill-gradient text-white text-sm font-semibold shadow-md hover:opacity-95 transition-opacity"
+            >
+              Try Interactive Simulator &amp; Tools →
+            </Link>
+            <Link
+              href="/compare"
+              className="px-5 py-3 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 text-sm font-semibold hover:bg-blue-100 transition-colors"
+            >
+              See Live State Proofs (/compare)
+            </Link>
           </div>
         </div>
 
-        {/* 3 PILLARS */}
-        <div className="max-w-6xl mx-auto mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-obsidian border border-white/10 rounded-xl p-6 space-y-2.5">
-            <div className="text-amber font-mono text-lg">◎ Private by default</div>
-            <p className="text-sm text-neutral-300 leading-relaxed">
-              A transaction sent here never touches a public mempool. It goes directly to the sequencer operator&apos;s own ingress, and to nobody else first—so predatory bots cannot front-run or sandwich your swap.
+        {/* BLUE GRADIENT BOX (REGION: THE SEQUENCER) */}
+        <div className="blue-gradient-box rounded-3xl p-6 sm:p-10 text-white shadow-xl grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-5">
+            <div className="text-xs font-mono uppercase tracking-wider text-blue-200 font-bold">
+              REGION: THE SEQUENCER
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold leading-tight">
+              One node, in the same place as the chain, close to the sequencer, close to every block.
+            </h2>
+            <p className="text-sm sm:text-base text-blue-100 leading-relaxed">
+              Every request is answered from our own hardware-isolated AWS Nitro node—not a shared upstream. Whether you are trading tokenized stocks like NVDA and AAPL or running automated swarms, your transactions never pay for failed gas.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-5">
+                <div className="text-3xl font-extrabold font-mono text-white">1 ms</div>
+                <div className="text-sm font-semibold text-blue-100 mt-1">Median gateway response</div>
+                <p className="text-xs text-blue-200 mt-1">
+                  Measured on the box that answers you. Blocks arrive every 100 ms.
+                </p>
+              </div>
+              <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-5">
+                <div className="text-3xl font-extrabold font-mono text-emerald-300">100%</div>
+                <div className="text-sm font-semibold text-blue-100 mt-1">WASM state replay verified</div>
+                <p className="text-xs text-blue-200 mt-1">
+                  Validated against Robinhood&apos;s state assertions every 10 minutes.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-5 bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between text-xs font-mono">
+              <span className="text-blue-200 font-semibold">CO-LOCATION TOPOLOGY</span>
+              <span className="text-emerald-300 font-bold">● 0.8 ms RTT</span>
+            </div>
+            <div className="p-4 rounded-xl bg-slate-900/40 border border-white/10 space-y-2">
+              <div className="text-xs font-mono text-blue-200">● ROBINHOOD SEQUENCER (US-EAST-1)</div>
+              <div className="text-xs font-mono text-emerald-300">● RAVELIN NITRO NODE (&lt;1ms away)</div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+              <div className="p-3 rounded-lg bg-slate-900/40 border border-white/10">
+                <div className="text-slate-400 text-[10px]">ROBINHOOD HASH</div>
+                <div className="text-white truncate mt-0.5">0x94c8e1a2...f07b</div>
+              </div>
+              <div className="p-3 rounded-lg bg-slate-900/40 border border-emerald-400/40">
+                <div className="text-emerald-300 text-[10px]">RAVELIN REPLAY</div>
+                <div className="text-emerald-300 truncate mt-0.5">0x94c8e1a2...f07b ✓</div>
+              </div>
+            </div>
+            <p className="text-[11px] text-blue-200 leading-snug">
+              Independent WASM assertion execution guarantees zero deviation between sequencer state and client simulation.
             </p>
           </div>
-          <div className="bg-obsidian border border-white/10 rounded-xl p-6 space-y-2.5">
-            <div className="text-emerald font-mono text-lg">⟲ Simulated first</div>
-            <p className="text-sm text-neutral-300 leading-relaxed">
-              Every send is executed from its signer against current state inside our hardware enclave. If it would revert—or if an AI agent is stuck in a duplicate retry loop—it is refused immediately and <strong className="text-white">never pays gas</strong>.
+        </div>
+
+        {/* 3 VISUAL STEP CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+          <div className="blue-card-soft rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 font-mono font-bold flex items-center justify-center text-lg">
+              ◎
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Private by default</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              A transaction sent here never touches a public mempool. It routes directly to the sequencer ingress, eliminating sandwich bots and predatory front-running on Robinhood Chain.
             </p>
           </div>
-          <div className="bg-obsidian border border-white/10 rounded-xl p-6 space-y-2.5">
-            <div className="text-allow font-mono text-lg">↺ Paid back (90% Rebate)</div>
-            <p className="text-sm text-neutral-300 leading-relaxed">
-              When your trade creates a profitable arbitrage backrun, the right to take it is auctioned in 200ms. <strong className="text-white">90% of the clearing price returns directly to your wallet</strong>.
+
+          <div className="blue-card-soft rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 font-mono font-bold flex items-center justify-center text-lg">
+              ⟲
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Simulated first ($0 failed gas)</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              Every send is dry-run inside our hardware enclave against the latest block. If it would revert—or an AI agent is in a duplicate calldata loop—it is refused immediately for <strong className="text-slate-900">$0 gas</strong>.
+            </p>
+          </div>
+
+          <div className="blue-card-soft rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition-shadow">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 font-mono font-bold flex items-center justify-center text-lg">
+              ↺
+            </div>
+            <h3 className="text-lg font-bold text-slate-900">Paid back (90% rebate)</h3>
+            <p className="text-sm text-slate-600 leading-relaxed">
+              When your trade creates an arbitrage backrun opportunity, searchers bid in a 200 ms Dutch auction. <strong className="text-blue-700">90% of the winning clearing price returns directly to your wallet</strong>.
             </p>
           </div>
         </div>
       </section>
 
       {/* SECTION 2: MEASURED, NOT CLAIMED */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+      <section className="space-y-6 pt-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-2">
-            <div className="font-mono text-xs text-emerald uppercase tracking-wider">On-Chain Proof · Click Any Metric to Verify</div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white">Measured, not claimed</h2>
-            <p className="text-neutral-400 text-sm sm:text-base">
-              Every number below is read directly from Robinhood Chain or our indexed enclave ledger, and each one links to the on-chain check behind it.
+            <span className="text-xs font-mono text-blue-700 uppercase tracking-wider font-bold">
+              ON-CHAIN AUDIT TRAIL · CLICK ANY CARD TO VERIFY
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900">Measured, not claimed</h2>
+            <p className="text-sm sm:text-base text-slate-600 max-w-2xl">
+              Every metric below is indexed directly from Robinhood Chain (ID 4663) or our audited enclave event logs.
             </p>
           </div>
-          <Link href="/compare" className="px-4 py-2 rounded-lg bg-obsidian border border-white/15 hover:border-emerald text-xs font-mono text-emerald shrink-0">
-            Verify Live State at /compare →
+          <Link
+            href="/tools"
+            className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-300 text-xs font-semibold text-slate-800 transition-colors shrink-0"
+          >
+            Open Interactive Tools →
           </Link>
         </div>
 
@@ -191,35 +222,40 @@ export default function HomePage() {
               key={m.title}
               type="button"
               onClick={() => setSelectedMetric(m)}
-              className="text-left bg-obsidian border border-white/10 hover:border-emerald/50 rounded-xl p-6 space-y-3 transition-all"
+              className="text-left bg-white border border-slate-200 hover:border-blue-400 rounded-2xl p-6 space-y-3 shadow-sm hover:shadow-md transition-all group"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-neutral-400">{m.title}</span>
-                <span className="text-[11px] font-mono text-emerald">Verify check ↗</span>
+                <span className="text-xs font-semibold text-slate-500">{m.title}</span>
+                <span className="text-[11px] font-mono text-blue-600 group-hover:underline">Verify proof ↗</span>
               </div>
-              <div className="text-3xl font-bold text-white font-mono">{m.value}</div>
-              <div className="text-xs text-neutral-300">{m.sub}</div>
-              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-xs font-mono">
-                <span className={`px-2 py-0.5 rounded ${m.badgeColor}`}>{m.badge}</span>
-                <span className="text-neutral-400 truncate ml-2">{m.foot}</span>
+              <div className="text-3xl font-extrabold text-slate-900 font-mono tracking-tight">{m.value}</div>
+              <div className="text-xs text-slate-600">{m.sub}</div>
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs font-mono">
+                <span className={`px-2 py-0.5 rounded-md text-[11px] font-semibold ${m.badgeColor}`}>
+                  {m.badge}
+                </span>
+                <span className="text-slate-400 truncate ml-2 text-[11px]">{m.foot}</span>
               </div>
             </button>
           ))}
         </div>
 
+        {/* ON-CHAIN PROOF MODAL / BANNER */}
         {selectedMetric && (
-          <div className="p-6 rounded-2xl bg-surface border border-emerald/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="p-6 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
             <div className="space-y-1">
-              <div className="text-xs font-mono text-emerald">ON-CHAIN VERIFICATION PROOF · {selectedMetric.title.toUpperCase()}</div>
-              <div className="text-lg font-bold text-white font-mono">
+              <div className="text-blue-800 font-bold uppercase">
+                ON-CHAIN ATTESTATION PROOF · {selectedMetric.title}
+              </div>
+              <div className="text-base font-bold text-slate-900">
                 {selectedMetric.value} — {selectedMetric.sub}
               </div>
-              <div className="text-xs font-mono text-neutral-400">Anchored Contract: {selectedMetric.contract}</div>
+              <div className="text-slate-600 text-[11px]">Anchored Contract: {selectedMetric.contract}</div>
             </div>
             <button
               type="button"
               onClick={() => setSelectedMetric(null)}
-              className="px-4 py-2 rounded-lg bg-black border border-white/15 text-xs font-mono text-neutral-300 hover:text-white"
+              className="px-4 py-2 rounded-xl bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 font-semibold shrink-0"
             >
               Close Proof ✕
             </button>
@@ -228,47 +264,76 @@ export default function HomePage() {
       </section>
 
       {/* SECTION 3: REVENUE BUYS $RVLN */}
-      <section className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
-        <div className="space-y-2 max-w-3xl">
-          <div className="font-mono text-xs text-amber uppercase tracking-wider">Investor Alignment · 100% Open-Market Buybacks</div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white">Revenue buys $RVLN</h2>
-          <p className="text-neutral-300 text-sm sm:text-base leading-relaxed">
-            What Ravelin earns from RPC plans, firewall protection, and auction surplus goes directly back into its own token on the open market—one swap at a time, each one a public transaction you can check.
+      <section className="space-y-6 pt-4">
+        <div className="space-y-2">
+          <span className="text-xs font-mono text-blue-700 uppercase tracking-wider font-bold">
+            INVESTOR ALIGNMENT · 100% OPEN-MARKET BUYBACKS
+          </span>
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900">Revenue buys $RVLN</h2>
+          <p className="text-sm sm:text-base text-slate-600 max-w-2xl leading-relaxed">
+            What Ravelin earns from private RPC plans, AI loop firewall protection, and backrun auction surplus is programmatically deployed into $RVLN open-market buybacks.
           </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          <div className="bg-obsidian border border-white/10 rounded-xl p-5 space-y-2">
-            <div className="text-xs text-neutral-400">Revenue earned</div>
-            <div className="text-2xl font-bold text-white font-mono">$18,217.08</div>
-            <div className="text-xs text-neutral-400">$6,173.25 protection · $9,816.00 plans · $2,227.83 overage</div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div className="text-xs text-slate-500 font-medium">Revenue earned</div>
+            <div className="text-2xl font-extrabold text-slate-900 font-mono">$18,217.08</div>
+            <div className="text-xs text-slate-500">$6,173 protection · $9,816 plans · $2,228 overage</div>
           </div>
-          <div className="bg-obsidian border border-white/10 rounded-xl p-5 space-y-2">
-            <div className="text-xs text-neutral-400">Collected on-chain</div>
-            <div className="text-2xl font-bold text-emerald font-mono">$18,355.56</div>
-            <div className="text-xs text-neutral-400">$97.08 pending batch · paid in ETH or USDG</div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div className="text-xs text-slate-500 font-medium">Collected on-chain</div>
+            <div className="text-2xl font-extrabold text-emerald-600 font-mono">$18,355.56</div>
+            <div className="text-xs text-slate-500">$97.08 pending batch · paid in ETH or USDG</div>
           </div>
-          <div className="bg-obsidian border border-white/10 rounded-xl p-5 space-y-2">
-            <div className="text-xs text-neutral-400">$RVLN bought back</div>
-            <div className="text-2xl font-bold text-amber font-mono">430,215 RVLN</div>
-            <div className="text-xs text-neutral-400">$18,168.82 across 5 open-market buybacks</div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div className="text-xs text-slate-500 font-medium">$RVLN bought back</div>
+            <div className="text-2xl font-extrabold text-blue-700 font-mono">430,215 RVLN</div>
+            <div className="text-xs text-slate-500">$18,168.82 across 5 open-market swaps</div>
           </div>
-          <div className="bg-obsidian border border-white/10 rounded-xl p-5 space-y-2">
-            <div className="text-xs text-neutral-400">Last buyback</div>
-            <div className="text-2xl font-bold text-allow font-mono">168,291 RVLN</div>
-            <div className="text-xs text-neutral-400 font-mono">0x0deb741e…9988f3 · Verified</div>
+          <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-2 shadow-sm">
+            <div className="text-xs text-slate-500 font-medium">Last buyback swap</div>
+            <div className="text-2xl font-extrabold text-slate-900 font-mono">168,291 RVLN</div>
+            <div className="text-xs text-slate-500 font-mono truncate">0x0deb741e…9988f3 · Verified</div>
           </div>
         </div>
 
-        <div className="bg-obsidian border border-white/10 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
+        <div className="p-5 rounded-2xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-xs">
           <div>
-            <span className="font-mono text-amber font-bold">100% Where it comes from:</span>{" "}
-            <span className="text-neutral-300">
-              Protected execution at 0.05% of value moved · RPC &amp; AI Firewall plan fees · request unit overage · 5% back-run auction surplus.
+            <span className="font-bold text-blue-900 font-mono">100% REVENUE ALLOCATION:</span>{" "}
+            <span className="text-slate-700">
+              0.05% protected execution fee + monthly RPC subscriptions + 5% auction surplus directly funding $RVLN liquidity.
             </span>
           </div>
-          <Link href="/revenue" className="font-mono text-emerald hover:underline shrink-0">
-            Token 0xfe2f…b167 · /api/revenue →
+          <Link
+            href="/revenue"
+            className="font-semibold text-blue-700 hover:underline shrink-0"
+          >
+            Explore Public Buyback Ledger (/revenue) →
+          </Link>
+        </div>
+      </section>
+
+      {/* SECTION 4: CALL TO ACTION STRIP */}
+      <section className="blue-gradient-box text-white rounded-3xl p-8 sm:p-12 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+        <div className="space-y-2 max-w-xl">
+          <h3 className="text-2xl font-bold">Ready to route your transactions privately?</h3>
+          <p className="text-sm text-blue-100">
+            Explore the 3 interactive simulation tools, test your custom firewall policy, or inspect our 100% WASM state validator.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-3 shrink-0">
+          <Link
+            href="/tools"
+            className="px-6 py-3 rounded-xl bg-white text-blue-800 text-sm font-bold shadow-md hover:bg-blue-50 transition-colors"
+          >
+            Launch Interactive Tools →
+          </Link>
+          <Link
+            href="/platform"
+            className="px-5 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm font-semibold hover:bg-white/20 transition-colors"
+          >
+            View Platform &amp; Pricing
           </Link>
         </div>
       </section>
