@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { CoLocationTopology } from "@/components/CoLocationTopology";
 
 interface MetricCard {
   title: string;
@@ -137,28 +138,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="lg:col-span-5 bg-white/10 backdrop-blur border border-white/20 rounded-2xl p-6 space-y-4">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-blue-200 font-semibold">CO-LOCATION TOPOLOGY</span>
-              <span className="text-emerald-300 font-bold">● 0.8 ms RTT</span>
-            </div>
-            <div className="p-4 rounded-xl bg-slate-900/40 border border-white/10 space-y-2">
-              <div className="text-xs font-mono text-blue-200">● ROBINHOOD SEQUENCER (US-EAST-1)</div>
-              <div className="text-xs font-mono text-emerald-300">● RAVELIN NITRO NODE (&lt;1ms away)</div>
-            </div>
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
-              <div className="p-3 rounded-lg bg-slate-900/40 border border-white/10">
-                <div className="text-slate-400 text-[10px]">ROBINHOOD HASH</div>
-                <div className="text-white truncate mt-0.5">0x94c8e1a2...f07b</div>
-              </div>
-              <div className="p-3 rounded-lg bg-slate-900/40 border border-emerald-400/40">
-                <div className="text-emerald-300 text-[10px]">RAVELIN REPLAY</div>
-                <div className="text-emerald-300 truncate mt-0.5">0x94c8e1a2...f07b ✓</div>
-              </div>
-            </div>
-            <p className="text-[11px] text-blue-200 leading-snug">
-              Independent WASM assertion execution guarantees zero deviation between sequencer state and client simulation.
-            </p>
+          <div className="lg:col-span-5">
+            <CoLocationTopology />
           </div>
         </div>
 
