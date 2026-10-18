@@ -11,7 +11,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        display: ['"Bricolage Grotesque"', 'sans-serif'],
+        display: ['"Orbitron"', '"Space Grotesk"', '"Bricolage Grotesque"', 'sans-serif'],
         mono: ['"JetBrains Mono"', 'monospace'],
       },
     },

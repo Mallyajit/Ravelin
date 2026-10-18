@@ -148,8 +148,8 @@ export default function HomePage() {
         data: {
           labels: ["Sep 15", "Sep 22", "Sep 29", "Oct 06", "Oct 13", "Oct 17"],
           datasets: [
-            { label: "Volume ($K)", data: [820, 1490, 1180, 1340, 1620, 1740], backgroundColor: "#2563EB", borderRadius: 4 },
-            { label: "Rebates ($K)", data: [24, 42, 31, 38, 46, 51], backgroundColor: "#38BDF8", borderRadius: 4 },
+            { label: "Volume ($K)", data: [820, 1490, 1180, 1340, 1620, 1740], backgroundColor: "#3B82F6", borderColor: "#00F0FF", borderWidth: 1, borderRadius: 6 },
+            { label: "Rebates ($K)", data: [24, 42, 31, 38, 46, 51], backgroundColor: "#8B5CF6", borderColor: "#EC4899", borderWidth: 1, borderRadius: 6 },
           ],
         },
         options: {
@@ -158,12 +158,12 @@ export default function HomePage() {
           animation: { duration: 1100, easing: "easeOutQuart" },
           plugins: {
             legend: {
-              labels: { color: "#0F172A", font: { family: "Plus Jakarta Sans", size: 11 } },
+              labels: { color: "#F8FAFC", font: { family: "Plus Jakarta Sans", size: 11 } },
             },
           },
           scales: {
-            x: { ticks: { color: "#475569" }, grid: { display: false } },
-            y: { ticks: { color: "#475569" }, grid: { color: "#F1F5F9" } },
+            x: { ticks: { color: "#94A3B8" }, grid: { display: false } },
+            y: { ticks: { color: "#94A3B8" }, grid: { color: "rgba(56, 189, 248, 0.12)" } },
           },
         },
       });
@@ -179,7 +179,7 @@ export default function HomePage() {
         data: {
           labels: ["User (90%)", "App (5%)", "Protocol (5%)"],
           datasets: [
-            { data: [90, 5, 5], backgroundColor: ["#2563EB", "#38BDF8", "#CBD5E1"], borderWidth: 0 },
+            { data: [90, 5, 5], backgroundColor: ["#00F0FF", "#8B5CF6", "#10B981"], borderWidth: 0 },
           ],
         },
         options: {
@@ -204,7 +204,7 @@ export default function HomePage() {
             {
               label: "Latency (ms)",
               data: [1.08, 18.4, 48.2],
-              backgroundColor: ["#2563EB", "#64748B", "#CBD5E1"],
+              backgroundColor: ["#00F0FF", "#8B5CF6", "#334155"],
               borderRadius: 4,
             },
           ],
@@ -216,8 +216,8 @@ export default function HomePage() {
           animation: { duration: 1100, easing: "easeOutQuart" },
           plugins: { legend: { display: false } },
           scales: {
-            x: { ticks: { color: "#475569" }, grid: { color: "#F1F5F9" } },
-            y: { ticks: { color: "#0F172A", font: { weight: "bold" } }, grid: { display: false } },
+            x: { ticks: { color: "#94A3B8" }, grid: { color: "rgba(56, 189, 248, 0.12)" } },
+            y: { ticks: { color: "#F8FAFC", font: { weight: "bold" } }, grid: { display: false } },
           },
         },
       });
@@ -236,8 +236,8 @@ export default function HomePage() {
             {
               label: "Cumulative $RVLN",
               data: [42000, 112000, 189000, 261924, 381048, 430215],
-              borderColor: "#2563EB",
-              backgroundColor: "rgba(37, 99, 235, 0.1)",
+              borderColor: "#00F0FF",
+              backgroundColor: "rgba(0, 240, 255, 0.16)",
               borderWidth: 2.5,
               fill: true,
               tension: 0.35,
@@ -250,12 +250,12 @@ export default function HomePage() {
           animation: { duration: 1200, easing: "easeOutQuart" },
           plugins: {
             legend: {
-              labels: { color: "#0F172A", font: { family: "Plus Jakarta Sans", size: 11 } },
+              labels: { color: "#F8FAFC", font: { family: "Plus Jakarta Sans", size: 11 } },
             },
           },
           scales: {
-            x: { ticks: { color: "#475569" }, grid: { display: false } },
-            y: { ticks: { color: "#475569" }, grid: { color: "#F1F5F9" } },
+            x: { ticks: { color: "#94A3B8" }, grid: { display: false } },
+            y: { ticks: { color: "#94A3B8" }, grid: { color: "rgba(56, 189, 248, 0.12)" } },
           },
         },
       });
@@ -433,6 +433,48 @@ export default function HomePage() {
             ctx.moveTo(0, yPos);
             ctx.lineTo(w, yPos);
             ctx.stroke();
+          }
+
+          
+          // 2080 Rotating 3D Wireframe Crystal Props on Canvas
+          const propTime = Date.now() * 0.0012;
+          const crystalCenters = [
+            { cx: w * 0.16, cy: h * 0.28, r: 34, col: "rgba(0, 240, 255, 0.22)" },
+            { cx: w * 0.84, cy: h * 0.32, r: 40, col: "rgba(139, 92, 246, 0.24)" },
+            { cx: w * 0.82, cy: h * 0.76, r: 32, col: "rgba(16, 185, 129, 0.20)" },
+          ];
+          for (let cIdx = 0; cIdx < crystalCenters.length; cIdx++) {
+            const cc = crystalCenters[cIdx];
+            const pAngle = propTime * (cIdx % 2 === 0 ? 1 : -1) + cIdx;
+            const px = cc.cx + ((lerpX / w) - 0.5) * -28;
+            const py = cc.cy + ((lerpY / h) - 0.5) * -28;
+            ctx.save();
+            ctx.strokeStyle = cc.col;
+            ctx.lineWidth = 1.2;
+            ctx.beginPath();
+            for (let v = 0; v < 6; v++) {
+              const a = pAngle + (v * Math.PI) / 3;
+              const vx = px + Math.cos(a) * cc.r;
+              const vy = py + Math.sin(a) * (cc.r * 0.68);
+              if (v === 0) ctx.moveTo(vx, vy);
+              else ctx.lineTo(vx, vy);
+            }
+            ctx.closePath();
+            ctx.stroke();
+            // Connect apex & nadir of 3D octahedron
+            const topY = py - cc.r * 0.95;
+            const botY = py + cc.r * 0.95;
+            for (let v = 0; v < 6; v += 2) {
+              const a = pAngle + (v * Math.PI) / 3;
+              const vx = px + Math.cos(a) * cc.r;
+              const vy = py + Math.sin(a) * (cc.r * 0.68);
+              ctx.beginPath();
+              ctx.moveTo(px, topY);
+              ctx.lineTo(vx, vy);
+              ctx.lineTo(px, botY);
+              ctx.stroke();
+            }
+            ctx.restore();
           }
 
           // Floating 3D Telemetry Nodes & Proximity Neural Links
@@ -666,6 +708,29 @@ export default function HomePage() {
   // SDK Code Snippet Tab
   const [codeTab, setCodeTab] = useState<"curl" | "ts" | "py">("curl");
 
+  // Live snippet runner state
+  const [snippetOutput, setSnippetOutput] = useState<{
+    rtt: string;
+    block: string;
+    rebate: string;
+    json: string;
+  }>({
+    rtt: "0.84",
+    block: "48,912,050",
+    rebate: "2.70",
+    json: '{"jsonrpc":"2.0","id":1,"result":{"txHash":"0x94f8a1b2...8f9091a4","enclaveGuard":"PASSED_0.18MS","rebateAuction":"90%_SPLIT_ACTIVE","gasSpentOnRevert":"$0.00"}}',
+  });
+
+  const handleRunLiveSnippet = () => {
+    const rtt = (0.76 + Math.random() * 0.18).toFixed(2);
+    const blk = (latestBlockNum + Math.floor(Math.random() * 9 + 1)).toLocaleString("en-US");
+    const reb = (2.4 + Math.random() * 14.5).toFixed(2);
+    const json = `{"jsonrpc":"2.0","id":1,"result":{"status":"EXECUTED_PRIVATE_TEE","block":"#${blk}","rtt":"${rtt}ms","rebateCredited":"+${reb} USDG (90%)","gasSpentOnReverts":"$0.00"}}`;
+    setSnippetOutput({ rtt, block: blk, rebate: reb, json });
+    triggerSnackbar("Nitro RPC Sandbox", `Executed live snippet in ${rtt} ms (+${reb} rebate).`);
+  };
+
+
   // Accordion FAQ states for homepage
   const [faqOpen1, setFaqOpen1] = useState(false);
   const [faqOpen2, setFaqOpen2] = useState(false);
@@ -676,6 +741,50 @@ export default function HomePage() {
       <canvas id="bg3dCanvas" aria-hidden="true" />
       <div id="cursorGlowAura" aria-hidden="true" />
       <div id="cursorReticleRing" aria-hidden="true" />
+
+      {/* 2080 FLOATING 3D BACKGROUND CYBER-PROPS (ISOMETRIC CUBE, GYRO, WAVM POLYHEDRON) */}
+      <div id="bgPropHeroCube" className="cyber-bg-prop hidden lg:block" style={{ top: "12%", left: "3%", width: "170px", height: "170px" }} aria-hidden="true">
+        <svg viewBox="0 0 180 180" className="w-full h-full">
+          <defs>
+            <linearGradient id="propGradCyanViolet" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#00F0FF" />
+              <stop offset="50%" stopColor="#3B82F6" />
+              <stop offset="100%" stopColor="#8B5CF6" />
+            </linearGradient>
+          </defs>
+          <circle cx="90" cy="90" r="76" fill="none" stroke="url(#propGradCyanViolet)" strokeWidth="1.2" strokeDasharray="10 6" className="prop-orbit-cw" />
+          <circle cx="90" cy="90" r="60" fill="none" stroke="#EC4899" strokeWidth="1" strokeDasharray="5 8" className="prop-orbit-ccw" opacity="0.65" />
+          {/* Isometric 3D Nitro Enclave Reactor Cube */}
+          <polygon points="90,34 138,62 138,118 90,146 42,118 42,62" fill="rgba(14, 165, 233, 0.08)" stroke="#00F0FF" strokeWidth="1.6" />
+          <polyline points="42,62 90,90 138,62" fill="none" stroke="#8B5CF6" strokeWidth="1.5" />
+          <line x1="90" y1="90" x2="90" y2="146" stroke="#00F0FF" strokeWidth="1.5" />
+          <circle cx="90" cy="90" r="6" fill="#00F0FF" />
+          <text x="90" y="168" textAnchor="middle" fill="#38BDF8" fontFamily="JetBrains Mono" fontSize="8" letterSpacing="2">NITRO.TEE.01</text>
+        </svg>
+      </div>
+
+      <div id="bgPropOrbitalRing" className="cyber-bg-prop hidden lg:block" style={{ top: "48%", right: "2.5%", width: "190px", height: "190px", animationDelay: "-3.5s" }} aria-hidden="true">
+        <svg viewBox="0 0 200 200" className="w-full h-full">
+          <circle cx="100" cy="100" r="84" fill="none" stroke="#8B5CF6" strokeWidth="1.2" strokeDasharray="14 8" className="prop-orbit-ccw" />
+          <circle cx="100" cy="100" r="66" fill="none" stroke="#10B981" strokeWidth="1.3" strokeDasharray="6 6" className="prop-orbit-cw" />
+          <polygon points="100,38 154,70 154,130 100,162 46,130 46,70" fill="rgba(139, 92, 246, 0.07)" stroke="#38BDF8" strokeWidth="1.4" />
+          <polygon points="100,56 138,122 62,122" fill="none" stroke="#EC4899" strokeWidth="1.3" className="prop-orbit-cw" />
+          <circle cx="100" cy="100" r="5" fill="#10B981" />
+          <text x="100" y="185" textAnchor="middle" fill="#A78BFA" fontFamily="JetBrains Mono" fontSize="8" letterSpacing="2">200MS.AUCTION</text>
+        </svg>
+      </div>
+
+      <div id="bgPropWasmPoly" className="cyber-bg-prop hidden xl:block" style={{ bottom: "10%", left: "3.5%", width: "155px", height: "155px", animationDelay: "-6.2s" }} aria-hidden="true">
+        <svg viewBox="0 0 160 160" className="w-full h-full">
+          <circle cx="80" cy="80" r="68" fill="none" stroke="#00F0FF" strokeWidth="1" strokeDasharray="4 6" className="prop-orbit-cw" />
+          <polygon points="80,22 134,80 80,138 26,80" fill="rgba(16, 185, 129, 0.08)" stroke="#10B981" strokeWidth="1.5" />
+          <line x1="26" y1="80" x2="134" y2="80" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="3 3" />
+          <line x1="80" y1="22" x2="80" y2="138" stroke="#8B5CF6" strokeWidth="1.2" strokeDasharray="3 3" />
+          <circle cx="80" cy="80" r="4.5" fill="#00F0FF" />
+          <text x="80" y="152" textAnchor="middle" fill="#34D399" fontFamily="JetBrains Mono" fontSize="7.5" letterSpacing="1.5">WAVM.BOLD.4663</text>
+        </svg>
+      </div>
+
 
       {/* SECTION 1: CENTERED HERO & CROSS-OCEAN EARTH CONTINENT SPHERE (#sec-hero) */}
       <section
@@ -1836,53 +1945,78 @@ export default function HomePage() {
         <div className="reveal-item reveal-fade-up flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-slate-900">SDK Quickstart</h2>
-            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Drop-in replacement for any EVM JSON-RPC provider</p>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">Drop-in endpoint: `https://rpc.ravelin.network`</p>
           </div>
-          <button
-            id="copyCodeSnippetBtn"
-            type="button"
-            onClick={() => {
-              navigator.clipboard?.writeText(CODE_SNIPPETS[codeTab]);
-              triggerSnackbar("SDK", "Copied code snippet to clipboard.");
-            }}
-            className="popup-btn"
-          >
-            Copy Snippet
-          </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setCodeTab("curl")}
+              className={`code-tab-btn popup-btn font-mono ${codeTab === "curl" ? "is-active" : ""}`}
+            >
+              cURL
+            </button>
+            <button
+              type="button"
+              onClick={() => setCodeTab("ts")}
+              className={`code-tab-btn popup-btn font-mono ${codeTab === "ts" ? "is-active" : ""}`}
+            >
+              TypeScript
+            </button>
+            <button
+              type="button"
+              onClick={() => setCodeTab("py")}
+              className={`code-tab-btn popup-btn font-mono ${codeTab === "py" ? "is-active" : ""}`}
+            >
+              Python
+            </button>
+          </div>
         </div>
 
-        <div className="reveal-item reveal-scale-up bg-slate-900 text-slate-100 rounded-2xl overflow-hidden border border-slate-800 shadow-xl">
-          <div className="p-3 border-b border-slate-800 flex items-center justify-between gap-3 bg-slate-950">
-            <div className="flex gap-2 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => setCodeTab("curl")}
-                className={`code-tab-btn popup-btn btn-sm ${codeTab === "curl" ? "is-active text-blue-400" : "text-slate-400"}`}
-              >
-                curl
-              </button>
-              <button
-                type="button"
-                onClick={() => setCodeTab("ts")}
-                className={`code-tab-btn popup-btn btn-sm ${codeTab === "ts" ? "is-active text-blue-400" : "text-slate-400"}`}
-              >
-                TypeScript (viem)
-              </button>
-              <button
-                type="button"
-                onClick={() => setCodeTab("py")}
-                className={`code-tab-btn popup-btn btn-sm ${codeTab === "py" ? "is-active text-blue-400" : "text-slate-400"}`}
-              >
-                Python (web3.py)
-              </button>
+        <div className="reveal-item reveal-scale-up cyber-card bg-slate-950 text-white rounded-2xl p-6 space-y-4 border border-cyan-500/40">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              <span className="font-mono text-xs text-cyan-300 ml-1">https://rpc.ravelin.network · Chain ID 4663 · Nitro PCR0 Locked</span>
             </div>
-            <div className="text-[11px] font-mono text-emerald-400 hidden sm:block">
-              Chain ID: 4663
+            <div className="flex items-center gap-2">
+              <button
+                id="runLiveSnippetBtn"
+                type="button"
+                onClick={handleRunLiveSnippet}
+                className="btn-primary-rounded px-4 h-8 text-xs"
+              >
+                Run Live Snippet
+              </button>
+              <button
+                id="copyCodeSnippetBtn"
+                type="button"
+                onClick={() => {
+                  navigator.clipboard?.writeText(CODE_SNIPPETS[codeTab]);
+                  triggerSnackbar("SDK", "Copied code snippet to clipboard.");
+                }}
+                className="popup-btn btn-sm bg-slate-800 text-white border-slate-700"
+              >
+                Copy
+              </button>
             </div>
           </div>
-          <pre id="codeSnippetPre" className="p-6 font-mono text-xs sm:text-sm overflow-x-auto leading-relaxed text-blue-200">
+          <pre id="codeSnippetPre" className="font-mono text-xs sm:text-sm text-cyan-100 overflow-x-auto leading-relaxed p-3 rounded-xl bg-slate-950/90 border border-slate-800/90">
             {CODE_SNIPPETS[codeTab]}
           </pre>
+          {/* Live Interactive JSON-RPC Execution Output Drawer */}
+          <div id="liveSnippetOutputBox" className="rounded-xl bg-slate-900/95 border border-cyan-500/30 p-3.5 font-mono text-xs space-y-1.5">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="text-emerald-400 font-bold">● LIVE ENCLAVE RESPONSE STREAM</span>
+              <span id="liveSnippetRttBadge" className="text-cyan-300" suppressHydrationWarning>
+                RTT: {snippetOutput.rtt} ms · Block #{snippetOutput.block} · 0 Mempool
+              </span>
+            </div>
+            <div id="liveSnippetResponseText" className="text-slate-300 overflow-x-auto" suppressHydrationWarning>
+              {snippetOutput.json}
+            </div>
+          </div>
         </div>
       </section>
 

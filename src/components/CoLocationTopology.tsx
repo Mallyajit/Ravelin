@@ -78,11 +78,11 @@ export function CoLocationTopology() {
       // Center rotation on the North Atlantic (around lon -34 W => rotLon +0.58)
       const rotLon = 0.58 + Math.sin(timeTick) * 0.22;
 
-      // Light icy-blue ocean sphere
+      // 2080 Holographic Dark Cyber-Planet Sphere
       const oceanGrad = ctx.createRadialGradient(cx - 32, cy - 32, 16, cx, cy, R);
-      oceanGrad.addColorStop(0, "#FFFFFF");
-      oceanGrad.addColorStop(0.55, "#EFF6FF");
-      oceanGrad.addColorStop(1, "#DBEAFE");
+      oceanGrad.addColorStop(0, "#0F172A");
+      oceanGrad.addColorStop(0.55, "#09132C");
+      oceanGrad.addColorStop(1, "#030712");
       ctx.fillStyle = oceanGrad;
       ctx.beginPath();
       ctx.arc(cx, cy, R, 0, Math.PI * 2);
@@ -123,7 +123,7 @@ export function CoLocationTopology() {
         const p = project3D(landDots[i].phi, landDots[i].theta, rotLon);
         if (p.z > -6) {
           const depthAlpha = Math.min(0.92, Math.max(0.2, (p.z + 10) / (R * 1.05)));
-          ctx.fillStyle = "rgba(37, 99, 235, " + depthAlpha.toFixed(2) + ")";
+          ctx.fillStyle = "rgba(0, 240, 255, " + depthAlpha.toFixed(2) + ")";
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.z > 25 ? 2.0 : 1.5, 0, Math.PI * 2);
           ctx.fill();
