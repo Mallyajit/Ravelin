@@ -194,7 +194,7 @@ export function CoLocationTopology() {
   }, []);
 
   return (
-    <div className="reveal-item reveal-scale-up bg-gradient-to-br from-blue-50/90 via-sky-50/60 to-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-md border border-blue-200 space-y-5">
+    <div className="reveal-item reveal-scale-up cyber-card bg-gradient-to-br from-blue-50/90 via-sky-50/60 to-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-md border border-blue-200 space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-blue-100 pb-4">
         <div>
           <div className="text-[11px] font-mono uppercase text-blue-700 font-semibold">

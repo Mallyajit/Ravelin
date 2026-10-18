@@ -20,6 +20,46 @@ interface WasmEntry {
   age: string;
 }
 
+
+const PROOF_RECORDS = {
+  volume: {
+    title: "Private Volume: $7,473,107",
+    desc: "Committed every 50 confirmed transactions to RavelinVolumeLog on Robinhood Chain.",
+    contract: "0x88B10000000000000000000000000000000090E2",
+    hash: "0x94f8a1b2c3d4e5f60718293a4b5c6d7e8f9091a4",
+  },
+  txs: {
+    title: "Protected Trades: 218,049",
+    desc: "Pre-simulated inside AWS Nitro TEE before reaching the Robinhood Chain sequencer.",
+    contract: "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789",
+    hash: "0x3b8e91a4f7c2d0e1a5b6c7d8e9f0a1b2c3d4e5f6",
+  },
+  mev: {
+    title: "Capital Saved: $201,591",
+    desc: "Includes 1,480 duplicate AI retry loops halted at zero gas cost.",
+    contract: "0x4F920000000000000000000000000000000011A0",
+    hash: "0x7c9a4e1200b1d2e3f4a5b6c78812a4f9e0d1c2b3",
+  },
+  rebate: {
+    title: "Rebate Share: 90%",
+    desc: "90% of the 200 ms sealed-bid auction clearing price returns to the user wallet.",
+    contract: "0x4F920000000000000000000000000000000011A0",
+    hash: "0x1e88f409a2b3c4d5e6f708192a3b4c5d6e7f8091",
+  },
+  searchers: {
+    title: "Active Wallets: 1,504",
+    desc: "18,593 total registered wallets, AI agents, and bonded searchers.",
+    contract: "0x31C40000000000000000000000000000000077B9",
+    hash: "0x5a12c301d4e5f6a7b8c9d0e1f2a3b4c5d6e7f809",
+  },
+  revenue: {
+    title: "Protocol Revenue: $18,217",
+    desc: "100% of net protocol revenue buys $RVLN on the open market.",
+    contract: "0xfe2f00000000000000000000000000000000b167",
+    hash: "0x0deb741e88a2c109f4d3b2a19988f3c4d5e6f708",
+  },
+};
+
 const INITIAL_WASM_HISTORY: WasmEntry[] = [
   { block: 48912050, root: "0x91e4...77c8", wavm: "0x91e4...77c8", rtt: "0.89 ms", age: "Just now" },
   { block: 48912000, root: "0x8f9d...3a21", wavm: "0x8f9d...3a21", rtt: "0.91 ms", age: "10m ago" },
@@ -267,6 +307,236 @@ export default function HomePage() {
     };
   }, []);
 
+
+  const [selectedProof, setSelectedProof] = useState<keyof typeof PROOF_RECORDS | null>(null);
+
+  // Track simMode in a ref so the 60FPS oscilloscope canvas always has the latest value
+  const simModeRef = useRef<"valid" | "loop" | "hold">("valid");
+
+  // 2080 Argon-4 Visual Engine: 3D Perspective Cyber-Grid, Glowing Cursor Lerp & Reticle, 3D Card Tilt, 60fps Oscilloscope
+  useEffect(() => {
+    const bgCanvas = document.getElementById("bg3dCanvas") as HTMLCanvasElement | null;
+    const aura = document.getElementById("cursorGlowAura");
+    const reticle = document.getElementById("cursorReticleRing");
+
+    let mouseX = window.innerWidth * 0.5;
+    let mouseY = window.innerHeight * 0.35;
+    let lerpX = mouseX;
+    let lerpY = mouseY;
+    let bgAnimId: number;
+    let waveAnimId: number;
+
+    const onMouseMove = (e: MouseEvent) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      // Update card-local --mouse-x and --mouse-y for holographic border & surface spotlight
+      const target = e.target as HTMLElement | null;
+      const card = target?.closest(".cyber-card") as HTMLElement | null;
+      if (card) {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty("--mouse-x", `${e.clientX - r.left}px`);
+        card.style.setProperty("--mouse-y", `${e.clientY - r.top}px`);
+      }
+
+      // Expand reticle on interactive elements
+      if (reticle && target) {
+        const interactive = target.closest("button, a, input, select, .tooltip-host, .cyber-card");
+        reticle.classList.toggle("is-hovering", Boolean(interactive));
+      }
+    };
+
+    window.addEventListener("mousemove", onMouseMove, { passive: true });
+
+    // 3D Tilt effect on .data-tilt-card scorecards
+    const tiltCards = document.querySelectorAll(".data-tilt-card");
+    const tiltHandlers: { card: HTMLElement; onMove: (e: MouseEvent) => void; onLeave: () => void }[] = [];
+
+    tiltCards.forEach((el) => {
+      const card = el as HTMLElement;
+      const onMove = (e: MouseEvent) => {
+        const r = card.getBoundingClientRect();
+        const relX = (e.clientX - r.left) / r.width - 0.5;
+        const relY = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = `perspective(700px) rotateX(${(-relY * 6).toFixed(2)}deg) rotateY(${(relX * 6).toFixed(2)}deg) translateY(-3px)`;
+      };
+      const onLeave = () => {
+        card.style.transform = "";
+      };
+      card.addEventListener("mousemove", onMove);
+      card.addEventListener("mouseleave", onLeave);
+      tiltHandlers.push({ card, onMove, onLeave });
+    });
+
+    // 3D Background Perspective Cyber-Grid & Floating Holographic Nodes
+    if (bgCanvas) {
+      const ctx = bgCanvas.getContext("2d");
+      if (ctx) {
+        let w = (bgCanvas.width = window.innerWidth);
+        let h = (bgCanvas.height = window.innerHeight);
+
+        const onResize = () => {
+          if (!bgCanvas) return;
+          w = bgCanvas.width = window.innerWidth;
+          h = bgCanvas.height = window.innerHeight;
+        };
+        window.addEventListener("resize", onResize);
+
+        const nodes: { x: number; y: number; z: number; vx: number; vy: number }[] = [];
+        const NODE_COUNT = 36;
+        for (let i = 0; i < NODE_COUNT; i++) {
+          nodes.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            z: 0.3 + Math.random() * 0.9,
+            vx: (Math.random() - 0.5) * 0.45,
+            vy: (Math.random() - 0.5) * 0.45,
+          });
+        }
+
+        let gridPhase = 0;
+        const renderBg3D = () => {
+          lerpX += (mouseX - lerpX) * 0.14;
+          lerpY += (mouseY - lerpY) * 0.14;
+
+          if (aura) {
+            aura.style.transform = `translate3d(${lerpX.toFixed(1)}px, ${lerpY.toFixed(1)}px, 0)`;
+          }
+          if (reticle) {
+            reticle.style.transform = `translate3d(${mouseX.toFixed(1)}px, ${mouseY.toFixed(1)}px, 0)`;
+          }
+
+          ctx.clearRect(0, 0, w, h);
+
+          // Perspective 3D Floor & Ceiling Cyber-Grid
+          const camOffsetX = ((lerpX / w) - 0.5) * 60;
+          const horizonY = h * 0.46 + ((lerpY / h) - 0.5) * 35;
+
+          ctx.strokeStyle = "rgba(37, 99, 235, 0.055)";
+          ctx.lineWidth = 1;
+          const numRays = 16;
+          for (let i = -numRays; i <= numRays; i++) {
+            const topX = w * 0.5 + i * 45 - camOffsetX * 0.4;
+            const botX = w * 0.5 + i * 165 + camOffsetX * 1.1;
+            ctx.beginPath();
+            ctx.moveTo(topX, horizonY);
+            ctx.lineTo(botX, h);
+            ctx.stroke();
+          }
+
+          gridPhase = (gridPhase + 0.008) % 1;
+          for (let j = 0; j < 8; j++) {
+            const p = (j + gridPhase) / 8;
+            const yPos = horizonY + Math.pow(p, 1.85) * (h - horizonY);
+            ctx.strokeStyle = `rgba(56, 189, 248, ${(p * 0.09).toFixed(3)})`;
+            ctx.beginPath();
+            ctx.moveTo(0, yPos);
+            ctx.lineTo(w, yPos);
+            ctx.stroke();
+          }
+
+          // Floating 3D Telemetry Nodes & Proximity Neural Links
+          for (let i = 0; i < nodes.length; i++) {
+            const n = nodes[i];
+            n.x += n.vx * n.z;
+            n.y += n.vy * n.z;
+
+            // Gentle attraction/repulsion to cursor
+            const dxM = lerpX - n.x;
+            const dyM = lerpY - n.y;
+            const distM = Math.hypot(dxM, dyM);
+            if (distM < 220 && distM > 1) {
+              n.x += (dxM / distM) * 0.35;
+              n.y += (dyM / distM) * 0.35;
+            }
+
+            if (n.x < 0) n.x = w;
+            if (n.x > w) n.x = 0;
+            if (n.y < 0) n.y = h;
+            if (n.y > h) n.y = 0;
+
+            // Connect to nearby nodes
+            for (let j = i + 1; j < nodes.length; j++) {
+              const m = nodes[j];
+              const d = Math.hypot(n.x - m.x, n.y - m.y);
+              if (d < 145) {
+                const alpha = (1 - d / 145) * 0.14;
+                ctx.strokeStyle = `rgba(37, 99, 235, ${alpha.toFixed(3)})`;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(n.x, n.y);
+                ctx.lineTo(m.x, m.y);
+                ctx.stroke();
+              }
+            }
+
+            // Connect to cursor if close
+            if (distM < 185) {
+              const cAlpha = (1 - distM / 185) * 0.28;
+              ctx.strokeStyle = `rgba(14, 165, 233, ${cAlpha.toFixed(3)})`;
+              ctx.lineWidth = 1.2;
+              ctx.beginPath();
+              ctx.moveTo(n.x, n.y);
+              ctx.lineTo(lerpX, lerpY);
+              ctx.stroke();
+            }
+
+            ctx.fillStyle = distM < 185 ? "rgba(14, 165, 233, 0.55)" : "rgba(37, 99, 235, 0.28)";
+            ctx.beginPath();
+            ctx.arc(n.x, n.y, 1.8 * n.z, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          bgAnimId = requestAnimationFrame(renderBg3D);
+        };
+        bgAnimId = requestAnimationFrame(renderBg3D);
+      }
+    }
+
+    // Live 60FPS Enclave Waveform Oscilloscope Canvas (#enclaveWaveformCanvas)
+    let wavePhase = 0;
+    const drawWaveform = () => {
+      const waveCanvas = document.getElementById("enclaveWaveformCanvas") as HTMLCanvasElement | null;
+      if (waveCanvas) {
+        const wCtx = waveCanvas.getContext("2d");
+        if (wCtx) {
+          const W = waveCanvas.width;
+          const H = waveCanvas.height;
+          wCtx.clearRect(0, 0, W, H);
+
+          const isLoop = simModeRef.current === "loop";
+          const isHold = simModeRef.current === "hold";
+          const strokeCol = isLoop ? "#EF4444" : isHold ? "#F59E0B" : "#38BDF8";
+
+          wCtx.strokeStyle = strokeCol;
+          wCtx.lineWidth = 2;
+          wCtx.beginPath();
+          for (let x = 0; x < W; x += 4) {
+            const freq = isLoop ? 0.085 : 0.045;
+            const amp = isLoop ? 11 : 8;
+            const y = H / 2 + Math.sin(x * freq + wavePhase) * amp * Math.sin(x * 0.012 - wavePhase * 0.5);
+            if (x === 0) wCtx.moveTo(x, y);
+            else wCtx.lineTo(x, y);
+          }
+          wCtx.stroke();
+          wavePhase += 0.14;
+        }
+      }
+      waveAnimId = requestAnimationFrame(drawWaveform);
+    };
+    waveAnimId = requestAnimationFrame(drawWaveform);
+
+    return () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      tiltHandlers.forEach(({ card, onMove, onLeave }) => {
+        card.removeEventListener("mousemove", onMove);
+        card.removeEventListener("mouseleave", onLeave);
+      });
+      if (bgAnimId) cancelAnimationFrame(bgAnimId);
+      if (waveAnimId) cancelAnimationFrame(waveAnimId);
+    };
+  }, []);
+
   // Workbench Simulator State
   const [wbTab, setWbTab] = useState<"simulator" | "calculator">("simulator");
   const [selectedPool, setSelectedPool] = useState("NVDA / USDC (0x88B1…90E2)");
@@ -277,6 +547,10 @@ export default function HomePage() {
   const [gasPriority, setGasPriority] = useState("Standard (0.01 gwei)");
   const [simMode, setSimMode] = useState<"valid" | "loop" | "hold">("valid");
   const [isSimulating, setIsSimulating] = useState(false);
+
+  useEffect(() => {
+    simModeRef.current = simMode;
+  }, [simMode]);
 
   const [simResult, setSimResult] = useState({
     st1Title: "NVDA / USDC",
@@ -397,7 +671,12 @@ export default function HomePage() {
   const [faqOpen2, setFaqOpen2] = useState(false);
 
   return (
-    <div className="space-y-0 text-slate-900">
+    <div className="space-y-0 text-slate-900 relative">
+      {/* 2080 Argon-4 Visual Engine Root Canvases & Cursor Elements */}
+      <canvas id="bg3dCanvas" aria-hidden="true" />
+      <div id="cursorGlowAura" aria-hidden="true" />
+      <div id="cursorReticleRing" aria-hidden="true" />
+
       {/* SECTION 1: CENTERED HERO & CROSS-OCEAN EARTH CONTINENT SPHERE (#sec-hero) */}
       <section
         id="sec-hero"
@@ -462,7 +741,7 @@ export default function HomePage() {
 
           {/* 3 Compact Visual Pillar Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div className="reveal-item reveal-fade-up bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
+            <div className="reveal-item reveal-fade-up cyber-card bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-base font-bold text-slate-900">Private Ingress</h3>
                 <span className="font-mono text-xs font-semibold text-blue-700">0 Mempool</span>
@@ -472,7 +751,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="reveal-item reveal-fade-up delay-100 bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
+            <div className="reveal-item reveal-fade-up delay-100 cyber-card bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-base font-bold text-slate-900">Pre-Simulated</h3>
                 <span className="font-mono text-xs font-semibold text-emerald-700">$0 Reverts</span>
@@ -482,7 +761,7 @@ export default function HomePage() {
               </p>
             </div>
 
-            <div className="reveal-item reveal-fade-up delay-200 bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
+            <div className="reveal-item reveal-fade-up delay-200 cyber-card bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-base font-bold text-slate-900">90% Rebates</h3>
                 <span className="font-mono text-xs font-semibold text-blue-700">Auto-Payout</span>
@@ -512,35 +791,65 @@ export default function HomePage() {
           </span>
         </div>
 
-        {/* 4 Scorecards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="reveal-item reveal-fade-up bg-white border border-slate-200 rounded-xl p-5 space-y-1 shadow-sm">
-            <div className="text-xs text-slate-500">Delivered privately</div>
-            <div className="font-mono text-2xl font-bold text-slate-900">$7,473,107</div>
-            <div className="text-[11px] text-emerald-700 font-semibold font-mono">▲ 4% (30d)</div>
+        {/* 6 Scorecards with 3D Tilt and Cyber Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="reveal-item reveal-fade-up cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-xs font-semibold text-slate-500">Private Volume</div>
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1" suppressHydrationWarning>$7,473,107</div>
+              <div className="text-[11px] font-mono text-slate-500 mt-1" suppressHydrationWarning>$19,509 (24h) · Peak $176k</div>
+            </div>
+            <button type="button" onClick={() => setSelectedProof("volume")} className="open-proof-btn popup-btn w-full">Proof</button>
           </div>
 
-          <div className="reveal-item reveal-fade-up delay-100 bg-white border border-slate-200 rounded-xl p-5 space-y-1 shadow-sm">
-            <div className="text-xs text-slate-500">Transactions protected</div>
-            <div className="font-mono text-2xl font-bold text-slate-900">218,049</div>
-            <div className="text-[11px] text-blue-700 font-semibold font-mono">0 Reverts Mined</div>
+          <div className="reveal-item reveal-fade-up delay-100 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-xs font-semibold text-slate-500">Protected Trades</div>
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1" suppressHydrationWarning>218,049</div>
+              <div className="text-[11px] font-mono text-slate-500 mt-1" suppressHydrationWarning>1,622 (24h) · 0 Mined Reverts</div>
+            </div>
+            <button type="button" onClick={() => setSelectedProof("txs")} className="open-proof-btn popup-btn w-full">Proof</button>
           </div>
 
-          <div className="reveal-item reveal-fade-up delay-200 bg-white border border-slate-200 rounded-xl p-5 space-y-1 shadow-sm">
-            <div className="text-xs text-slate-500">MEV &amp; Loop Drains Prevented</div>
-            <div className="font-mono text-2xl font-bold text-emerald-700">$201,591</div>
-            <div className="text-[11px] text-slate-500 font-mono">147 Loops Halted</div>
+          <div className="reveal-item reveal-fade-up delay-200 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-xs font-semibold text-slate-500">Capital Saved</div>
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-blue-700 mt-1" suppressHydrationWarning>$201,591</div>
+              <div className="text-[11px] font-mono text-slate-500 mt-1" suppressHydrationWarning>1,480 AI Loops Refused</div>
+            </div>
+            <button type="button" onClick={() => setSelectedProof("mev")} className="open-proof-btn popup-btn w-full">Proof</button>
           </div>
 
-          <div className="reveal-item reveal-fade-up delay-300 bg-white border border-slate-200 rounded-xl p-5 space-y-1 shadow-sm">
-            <div className="text-xs text-slate-500">Rebate share</div>
-            <div className="font-mono text-2xl font-bold text-blue-700">90%</div>
-            <div className="text-[11px] text-blue-600 font-semibold font-mono">To Wallet Instantly</div>
+          <div className="reveal-item reveal-fade-up cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-xs font-semibold text-slate-500">User Rebate Share</div>
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1" suppressHydrationWarning>90%</div>
+              <div className="text-[11px] font-mono text-slate-500 mt-1" suppressHydrationWarning>5% App · 5% Protocol</div>
+            </div>
+            <button type="button" onClick={() => setSelectedProof("rebate")} className="open-proof-btn popup-btn w-full">Proof</button>
+          </div>
+
+          <div className="reveal-item reveal-fade-up delay-100 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-xs font-semibold text-slate-500">Active Wallets</div>
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1" suppressHydrationWarning>1,504</div>
+              <div className="text-[11px] font-mono text-slate-500 mt-1" suppressHydrationWarning>24h · 18,593 Total</div>
+            </div>
+            <button type="button" onClick={() => setSelectedProof("searchers")} className="open-proof-btn popup-btn w-full">Proof</button>
+          </div>
+
+          <div className="reveal-item reveal-fade-up delay-200 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+            <div>
+              <div className="text-xs font-semibold text-slate-500">Protocol Revenue</div>
+              <div className="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1" suppressHydrationWarning>$18,217</div>
+              <div className="text-[11px] font-mono text-slate-500 mt-1" suppressHydrationWarning>100% Allocated to $RVLN</div>
+            </div>
+            <button type="button" onClick={() => setSelectedProof("revenue")} className="open-proof-btn popup-btn w-full">Proof</button>
           </div>
         </div>
 
         {/* Weekly Protected Volume Bar Graphic (#telemetryMainChart) */}
-        <div className="reveal-item reveal-scale-up bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="reveal-item reveal-scale-up cyber-card bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-display text-base font-bold text-slate-900">Protected Weekly Volume ($ USD)</h3>
@@ -586,7 +895,7 @@ export default function HomePage() {
         {/* Pane A: Enclave Simulator */}
         {wbTab === "simulator" && (
           <div className="space-y-6">
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-6">
+            <div className="cyber-card bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-6">
               {/* 6 Professional Execution Parameters (2-Column Grid, Every Label Beside Input Box) */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* 1. Token Pool */}
@@ -774,9 +1083,97 @@ export default function HomePage() {
               </div>
             )}
 
-            {/* Visual 4-Node Pipeline Result */}
+            {/* Visual 4-Node Pipeline Result with 2080 Flowchart & 60FPS Oscilloscope */}
             {!isSimulating && (
-              <div id="simPipelineGrid" className="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
+              <div id="simPipelineGrid" className="cyber-card bg-white/95 border border-blue-200 rounded-2xl p-6 space-y-5 shadow-sm">
+                {/* 2080 Animated SVG Enclave Execution Flowchart */}
+                <div className="rounded-xl bg-gradient-to-r from-slate-950 via-blue-950 to-slate-950 p-4 border border-blue-500/40 space-y-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono">
+                    <span className="text-sky-400 font-semibold flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                      <span>NITRO TEE DETERMINISTIC EXECUTION CIRCUIT · LIVE FLOWCHART</span>
+                    </span>
+                    <span id="flowchartTelemetryBadge" className="text-blue-200">
+                      {simMode === "loop" ? "0.18 ms Loop Guard Active" : "0.18 ms Guard · 0.94 ms Settlement"}
+                    </span>
+                  </div>
+
+                  <svg id="enclaveAnimatedFlowchart" viewBox="0 0 760 118" className="w-full h-24 sm:h-28 overflow-visible">
+                    <defs>
+                      <linearGradient id="conduitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#2563EB" />
+                        <stop offset="50%" stopColor="#38BDF8" />
+                        <stop offset="100%" stopColor="#10B981" />
+                      </linearGradient>
+                      <filter id="cyberGlow" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="3" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                      </filter>
+                    </defs>
+
+                    {/* Background Guide Tracks */}
+                    <line x1="115" y1="56" x2="275" y2="56" stroke="#1E293B" strokeWidth="4" />
+                    <line x1="295" y1="56" x2="465" y2="56" stroke="#1E293B" strokeWidth="4" />
+                    <line x1="485" y1="56" x2="645" y2="56" stroke="#1E293B" strokeWidth="4" />
+
+                    {/* Animated Laser Conduits */}
+                    <line id="flowConduit1" x1="115" y1="56" x2="275" y2="56" stroke="url(#conduitGrad)" strokeWidth="3" className="flowchart-conduit-fast" filter="url(#cyberGlow)" />
+                    <line id="flowConduit2" x1="295" y1="56" x2="465" y2="56" stroke={simMode === "loop" ? "#EF4444" : "url(#conduitGrad)"} strokeWidth="3" className="flowchart-conduit-fast" filter="url(#cyberGlow)" />
+                    <line id="flowConduit3" x1="485" y1="56" x2="645" y2="56" stroke={simMode === "loop" ? "#64748B" : "url(#conduitGrad)"} strokeWidth="3" className="flowchart-conduit-fast" filter="url(#cyberGlow)" />
+
+                    {/* Node 1: ABI Check */}
+                    <g transform="translate(85, 56)">
+                      <circle r="34" fill="none" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="4 3" className="flowchart-node-ring" />
+                      <rect x="-58" y="-26" width="116" height="52" rx="10" fill="#0F172A" stroke="#3B82F6" strokeWidth="1.8" />
+                      <text x="0" y="-6" textAnchor="middle" fill="#38BDF8" fontFamily="JetBrains Mono" fontSize="9" fontWeight="700">01 · ABI VERIFY</text>
+                      <text id="svgNode1Text" x="0" y="12" textAnchor="middle" fill="#F8FAFC" fontFamily="JetBrains Mono" fontSize="10" fontWeight="600">
+                        {selectedPool.split(" (")[0] || "Whitelisted"}
+                      </text>
+                    </g>
+
+                    {/* Node 2: RocksDB Loop Guard */}
+                    <g transform="translate(285, 56)">
+                      <circle r="34" fill="none" stroke={simMode === "loop" || selectedPool.includes("Unlisted") ? "#EF4444" : "#38BDF8"} strokeWidth="1.2" strokeDasharray="4 3" className="flowchart-node-ring" />
+                      <rect id="svgNode2Box" x="-62" y="-26" width="124" height="52" rx="10" fill="#0F172A" stroke={simMode === "loop" || selectedPool.includes("Unlisted") ? "#EF4444" : "#38BDF8"} strokeWidth="1.8" />
+                      <text x="0" y="-6" textAnchor="middle" fill={simMode === "loop" || selectedPool.includes("Unlisted") ? "#F87171" : "#38BDF8"} fontFamily="JetBrains Mono" fontSize="9" fontWeight="700">02 · LOOP GUARD</text>
+                      <text id="svgNode2Text" x="0" y="12" textAnchor="middle" fill={simMode === "loop" || selectedPool.includes("Unlisted") ? "#EF4444" : "#34D399"} fontFamily="JetBrains Mono" fontSize="10" fontWeight="600">
+                        {simMode === "loop" || selectedPool.includes("Unlisted") ? "LOOP BLOCKED" : "0.18 ms Unique"}
+                      </text>
+                    </g>
+
+                    {/* Node 3: ArbSys Gas Guard */}
+                    <g transform="translate(475, 56)">
+                      <circle r="34" fill="none" stroke="#38BDF8" strokeWidth="1.2" strokeDasharray="4 3" className="flowchart-node-ring" />
+                      <rect x="-58" y="-26" width="116" height="52" rx="10" fill="#0F172A" stroke="#3B82F6" strokeWidth="1.8" />
+                      <text x="0" y="-6" textAnchor="middle" fill="#38BDF8" fontFamily="JetBrains Mono" fontSize="9" fontWeight="700">03 · ARBSYS CAP</text>
+                      <text id="svgNode3Text" x="0" y="12" textAnchor="middle" fill="#F8FAFC" fontFamily="JetBrains Mono" fontSize="10" fontWeight="600">
+                        {simMode === "loop" ? "$0 Gas Spent" : "$0.004 L1+L2"}
+                      </text>
+                    </g>
+
+                    {/* Node 4: 200ms Rebate Settlement */}
+                    <g transform="translate(670, 56)">
+                      <circle r="36" fill="none" stroke={simMode === "loop" ? "#64748B" : (simMode === "hold" || simAmount >= 10000) ? "#F59E0B" : "#10B981"} strokeWidth="1.4" strokeDasharray="5 3" className="flowchart-node-ring" />
+                      <rect id="svgNode4Box" x="-64" y="-26" width="128" height="52" rx="10" fill="#0F172A" stroke={simMode === "loop" ? "#64748B" : (simMode === "hold" || simAmount >= 10000) ? "#F59E0B" : "#10B981"} strokeWidth="2" />
+                      <text x="0" y="-6" textAnchor="middle" fill={simMode === "loop" ? "#94A3B8" : (simMode === "hold" || simAmount >= 10000) ? "#FBBF24" : "#34D399"} fontFamily="JetBrains Mono" fontSize="9" fontWeight="700">04 · SEQUENCER</text>
+                      <text id="svgNode4Text" x="0" y="12" textAnchor="middle" fill={simMode === "loop" ? "#94A3B8" : (simMode === "hold" || simAmount >= 10000) ? "#FDE68A" : "#A7F3D0"} fontFamily="JetBrains Mono" fontSize="10" fontWeight="700">
+                        {simMode === "loop" ? "$0 Gas Saved" : (simMode === "hold" || simAmount >= 10000) ? "Holding Pen" : `+${(simAmount * 0.0018).toFixed(2)} Rebate`}
+                      </text>
+                    </g>
+                  </svg>
+
+                  {/* Live 60FPS Enclave Telemetry Waveform Oscilloscope */}
+                  <div className="flex items-center gap-3 pt-1 border-t border-slate-800/80">
+                    <span className="text-[10px] font-mono text-slate-400 uppercase shrink-0">TEE Bus Wave</span>
+                    <div className="relative h-8 flex-1 overflow-hidden rounded bg-slate-900/90 border border-slate-800">
+                      <canvas id="enclaveWaveformCanvas" width={520} height={32} className="w-full h-full"></canvas>
+                    </div>
+                    <span id="enclaveWaveHzLabel" className={`text-[10px] font-mono shrink-0 ${simMode === "loop" ? "text-red-400" : simMode === "hold" ? "text-amber-400" : "text-emerald-400"}`}>
+                      {simMode === "loop" ? "REVERT BLOCKED (LOOP)" : simMode === "hold" ? "PAUSED / HOLDING PEN" : "100 ms / 10 Hz Lock"}
+                    </span>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
                     <div className="font-mono text-[10px] uppercase text-slate-400">ABI Check</div>
@@ -829,7 +1226,7 @@ export default function HomePage() {
         {/* Pane B: Rebate Estimator & Holding Pen */}
         {wbTab === "calculator" && (
           <div id="wbPane-calculator" className="space-y-6">
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-5">
+            <div className="cyber-card bg-slate-50 border border-slate-200 rounded-2xl p-6 space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
                 <div className="md:col-span-7 space-y-4">
                   <h3 className="font-display text-lg font-bold text-slate-900">90% Rebate Estimator</h3>
@@ -880,7 +1277,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="md:col-span-5 bg-white border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center">
+                <div className="md:col-span-5 cyber-card bg-white border border-slate-200 rounded-xl p-4 flex flex-col items-center justify-center">
                   <div className="text-xs font-semibold text-slate-700 mb-2 font-display">Auction Clearing Split</div>
                   <div style={{ height: "150px", width: "150px", position: "relative" }}>
                     <canvas id="rebateSplitChart"></canvas>
@@ -968,8 +1365,8 @@ export default function HomePage() {
           </button>
         </div>
 
-        {/* Live WASM State Transition Verifier Console (4-Metric Header + 3-Step Progress Bar) */}
-        <div className="reveal-item reveal-fade-up bg-gradient-to-r from-blue-50/80 via-white to-sky-50/70 border border-blue-200 rounded-2xl p-5 space-y-4">
+        {/* Live WASM State Transition Verifier Console (4-Metric Header + 2080 Flowchart + 3-Step Progress Bar) */}
+        <div className="reveal-item reveal-fade-up cyber-card bg-gradient-to-r from-blue-50/80 via-white to-sky-50/70 border border-blue-200 rounded-2xl p-5 space-y-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div className="p-3 rounded-xl bg-white border border-slate-200">
               <div className="text-[10px] font-mono uppercase text-slate-400">WAVM Module Root</div>
@@ -983,16 +1380,45 @@ export default function HomePage() {
             </div>
             <div className="p-3 rounded-xl bg-white border border-slate-200">
               <div className="text-[10px] font-mono uppercase text-slate-400">Replay Duration</div>
-              <div id="wasmLiveDurationLabel" className="font-mono font-bold text-emerald-700 mt-0.5">
+              <div id="wasmLiveDurationLabel" className="font-mono font-bold text-emerald-700 mt-0.5" suppressHydrationWarning>
                 0.89 ms
               </div>
             </div>
             <div className="p-3 rounded-xl bg-white border border-slate-200">
               <div className="text-[10px] font-mono uppercase text-slate-400">BoLD Status</div>
-              <div id="wasmLiveStatusLabel" className="font-mono font-bold text-emerald-700 mt-0.5">
+              <div id="wasmLiveStatusLabel" className="font-mono font-bold text-emerald-700 mt-0.5" suppressHydrationWarning>
                 100% Match
               </div>
             </div>
+          </div>
+
+          {/* 2080 Animated SVG WASM State Replay 3-Node BoLD Flowchart */}
+          <div className="rounded-xl bg-slate-950 p-3.5 border border-blue-500/30">
+            <svg viewBox="0 0 680 74" className="w-full h-16 overflow-visible">
+              <line x1="130" y1="37" x2="290" y2="37" stroke="#1E293B" strokeWidth="3" />
+              <line x1="390" y1="37" x2="550" y2="37" stroke="#1E293B" strokeWidth="3" />
+              <line x1="130" y1="37" x2="290" y2="37" stroke="#38BDF8" strokeWidth="2.5" className="flowchart-conduit-fast" />
+              <line x1="390" y1="37" x2="550" y2="37" stroke="#10B981" strokeWidth="2.5" className="flowchart-conduit-fast" />
+
+              <g transform="translate(80, 37)">
+                <rect x="-70" y="-20" width="140" height="40" rx="8" fill="#0F172A" stroke="#3B82F6" strokeWidth="1.5" />
+                <text x="0" y="-3" textAnchor="middle" fill="#38BDF8" fontFamily="JetBrains Mono" fontSize="8.5" fontWeight="700">STEP 1 · BATCH INGRESS</text>
+                <text x="0" y="11" textAnchor="middle" fill="#F8FAFC" fontFamily="JetBrains Mono" fontSize="9.5">Orbit Sequencer Feed</text>
+              </g>
+
+              <g transform="translate(340, 37)">
+                <circle r="26" fill="none" stroke="#38BDF8" strokeWidth="1" strokeDasharray="3 3" className="flowchart-node-ring" />
+                <rect x="-76" y="-20" width="152" height="40" rx="8" fill="#0F172A" stroke="#38BDF8" strokeWidth="1.5" />
+                <text x="0" y="-3" textAnchor="middle" fill="#38BDF8" fontFamily="JetBrains Mono" fontSize="8.5" fontWeight="700">STEP 2 · WAVM REPLAY</text>
+                <text x="0" y="11" textAnchor="middle" fill="#E0F2FE" fontFamily="JetBrains Mono" fontSize="9.5">Deterministic 0.89 ms</text>
+              </g>
+
+              <g transform="translate(600, 37)">
+                <rect x="-70" y="-20" width="140" height="40" rx="8" fill="#0F172A" stroke="#10B981" strokeWidth="1.5" />
+                <text x="0" y="-3" textAnchor="middle" fill="#34D399" fontFamily="JetBrains Mono" fontSize="8.5" fontWeight="700">STEP 3 · MERKLE ROOT</text>
+                <text x="0" y="11" textAnchor="middle" fill="#A7F3D0" fontFamily="JetBrains Mono" fontSize="9.5">BoLD 100% Verified</text>
+              </g>
+            </svg>
           </div>
 
           {/* 3-Step Verification Progress Bar */}
@@ -1010,12 +1436,12 @@ export default function HomePage() {
         </div>
 
         {/* Static Graph 2: Latency Benchmark (#validatorLatencyChart) */}
-        <div className="reveal-item reveal-scale-up bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
+        <div className="reveal-item reveal-scale-up cyber-card bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-display text-base font-bold text-slate-900">Median Response Latency (ms)</h3>
             <span className="font-mono text-xs font-semibold text-blue-700">1.08 ms vs. 48.2 ms</span>
           </div>
-          <div style={{ height: "200px", width: "100%", position: "relative" }}>
+          <div style={{ height: "240px", width: "100%", position: "relative" }}>
             <canvas id="validatorLatencyChart" data-scroll-chart="latency"></canvas>
           </div>
         </div>
@@ -1133,12 +1559,12 @@ export default function HomePage() {
         </div>
 
         {/* Cumulative $RVLN Purchased Line Chart (#buybackCurveChart) */}
-        <div className="reveal-item reveal-scale-up bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
+        <div className="reveal-item reveal-scale-up cyber-card bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="font-display text-base font-bold text-slate-900">Cumulative $RVLN Purchased (430,215 RVLN)</h3>
             <span className="font-mono text-xs font-semibold text-blue-700">$17,805.08 Total</span>
           </div>
-          <div style={{ height: "220px", width: "100%", position: "relative" }}>
+          <div style={{ height: "240px", width: "100%", position: "relative" }}>
             <canvas id="buybackCurveChart" data-scroll-chart="buyback"></canvas>
           </div>
         </div>
@@ -1248,7 +1674,7 @@ export default function HomePage() {
         {/* 4 Auth-Aware Plan Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* Card 1: Free */}
-          <div className="reveal-item reveal-fade-up bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-5">
+          <div className="reveal-item reveal-fade-up cyber-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-5">
             <div className="space-y-1.5">
               <h3 className="font-display text-base font-bold text-slate-900">Free</h3>
               <div className="font-mono text-2xl font-bold text-slate-900">$0</div>
@@ -1264,7 +1690,7 @@ export default function HomePage() {
           </div>
 
           {/* Card 2: Builder */}
-          <div className="reveal-item reveal-fade-up delay-100 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-5">
+          <div className="reveal-item reveal-fade-up delay-100 cyber-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-5">
             <div className="space-y-1.5">
               <h3 className="font-display text-base font-bold text-slate-900">Builder</h3>
               <div className="font-mono text-2xl font-bold text-slate-900">
@@ -1282,7 +1708,7 @@ export default function HomePage() {
           </div>
 
           {/* Card 3: Pro (Current Plan) */}
-          <div className="reveal-item reveal-fade-up delay-200 bg-blue-50/70 border-2 border-blue-600 rounded-2xl p-5 flex flex-col justify-between space-y-5 shadow-sm">
+          <div className="reveal-item reveal-fade-up delay-200 cyber-card bg-blue-50/70 border-2 border-blue-600 rounded-2xl p-5 flex flex-col justify-between space-y-5 shadow-sm">
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
                 <h3 className="font-display text-base font-bold text-slate-900">Pro</h3>
@@ -1307,7 +1733,7 @@ export default function HomePage() {
           </div>
 
           {/* Card 4: Dedicated */}
-          <div className="reveal-item reveal-fade-up delay-300 bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-5">
+          <div className="reveal-item reveal-fade-up delay-300 cyber-card bg-white border border-slate-200 rounded-2xl p-5 flex flex-col justify-between space-y-5">
             <div className="space-y-1.5">
               <h3 className="font-display text-base font-bold text-slate-900">Dedicated</h3>
               <div className="font-mono text-2xl font-bold text-slate-900">
@@ -1466,6 +1892,63 @@ export default function HomePage() {
       <FaqExplorerModal />
       <LoginModal />
       <DepositConfirmModal />
+
+            {/* Cryptographic Proof Modal */}
+      {selectedProof && (
+        <div
+          id="proofModal"
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200"
+          onClick={() => setSelectedProof(null)}
+        >
+          <div
+            className="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-xs uppercase text-blue-700 font-semibold">On-Chain Cryptographic Proof</span>
+              <button
+                type="button"
+                id="closeProofModalBtn"
+                onClick={() => setSelectedProof(null)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-sm font-bold"
+              >
+                ✕
+              </button>
+            </div>
+            <h3 id="proofModalTitle" className="font-display text-xl font-bold text-slate-900 mt-2">
+              {PROOF_RECORDS[selectedProof].title}
+            </h3>
+            <p id="proofModalDesc" className="text-sm text-slate-600 leading-relaxed">
+              {PROOF_RECORDS[selectedProof].desc}
+            </p>
+            <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 font-mono text-xs">
+              <div className="flex justify-between">
+                <span className="text-slate-500">Contract</span>
+                <span id="proofModalContract" className="text-blue-700 font-semibold">{PROOF_RECORDS[selectedProof].contract}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Proof Hash</span>
+                <span id="proofModalHash" className="text-slate-900 font-semibold">{PROOF_RECORDS[selectedProof].hash}</span>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                type="button"
+                id="copyProofHashBtn"
+                onClick={() => {
+                  navigator.clipboard.writeText(PROOF_RECORDS[selectedProof].hash);
+                  triggerSnackbar("Proof", "Copied proof hash.");
+                }}
+                className="btn-primary-rounded"
+              >
+                Copy Hash
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Floating Snackbar Toast */}
       {toastMsg && (

@@ -337,9 +337,187 @@
       mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 15%, rgba(0,0,0,0.15) 100%);
       -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 15%, rgba(0,0,0,0.15) 100%);
     }
+  
+    /* ===================================================================== */
+    /* 2080 FUTURISTIC ARGON-4 VISUAL ENGINE (3D GRID, LASER BORDERS, GLOW)  */
+    /* ===================================================================== */
+    @keyframes cyberLaserSpin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes conduitPulse {
+      0% { stroke-dashoffset: 120; }
+      100% { stroke-dashoffset: 0; }
+    }
+    @keyframes nodeRingPulse {
+      0%, 100% { transform: scale(1); opacity: 0.75; }
+      50% { transform: scale(1.22); opacity: 0.2; }
+    }
+    @keyframes hudScanline {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(400%); }
+    }
+    @keyframes borderFlowGradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #bg3dCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.85;
+    }
+
+    #cursorGlowAura {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 440px;
+      height: 440px;
+      margin-left: -220px;
+      margin-top: -220px;
+      border-radius: 9999px;
+      background: radial-gradient(
+        circle,
+        rgba(37, 99, 235, 0.15) 0%,
+        rgba(56, 189, 248, 0.09) 35%,
+        rgba(16, 185, 129, 0.03) 60%,
+        transparent 74%
+      );
+      pointer-events: none;
+      z-index: 35;
+      will-change: transform;
+      mix-blend-mode: multiply;
+      transition: width 0.25s ease, height 0.25s ease;
+    }
+
+    #cursorReticleRing {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 28px;
+      height: 28px;
+      margin-left: -14px;
+      margin-top: -14px;
+      border-radius: 9999px;
+      border: 1.5px solid rgba(37, 99, 235, 0.55);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.45), inset 0 0 8px rgba(37, 99, 235, 0.25);
+      pointer-events: none;
+      z-index: 90;
+      will-change: transform;
+      transition: width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  height 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  margin 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.2s ease,
+                  background-color 0.2s ease;
+    }
+    #cursorReticleRing.is-hovering {
+      width: 46px;
+      height: 46px;
+      margin-left: -23px;
+      margin-top: -23px;
+      border-color: #0284C7;
+      background-color: rgba(56, 189, 248, 0.08);
+      box-shadow: 0 0 24px rgba(37, 99, 235, 0.55), inset 0 0 12px rgba(56, 189, 248, 0.35);
+    }
+    @media (pointer: coarse) {
+      #cursorGlowAura, #cursorReticleRing { display: none; }
+    }
+
+    /* Animated Conic & Gradient Laser Border Cards */
+    .cyber-card {
+      position: relative;
+      isolation: isolate;
+      transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.28s ease;
+    }
+    .cyber-card::before {
+      content: '';
+      position: absolute;
+      inset: -1.5px;
+      border-radius: inherit;
+      padding: 1.5px;
+      background: linear-gradient(
+        125deg,
+        rgba(37, 99, 235, 0.2) 0%,
+        rgba(56, 189, 248, 0.85) 28%,
+        rgba(16, 185, 129, 0.65) 50%,
+        rgba(37, 99, 235, 0.9) 72%,
+        rgba(147, 197, 253, 0.2) 100%
+      );
+      background-size: 260% 260%;
+      animation: borderFlowGradient 4.8s ease infinite;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+      opacity: 0.68;
+      transition: opacity 0.25s ease;
+      z-index: 2;
+    }
+    .cyber-card:hover::before {
+      opacity: 1;
+    }
+    .cyber-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: radial-gradient(
+        340px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(56, 189, 248, 0.13),
+        transparent 70%
+      );
+      opacity: 0;
+      transition: opacity 0.25s ease;
+      pointer-events: none;
+      z-index: 1;
+    }
+    .cyber-card:hover::after {
+      opacity: 1;
+    }
+    .cyber-card:hover {
+      box-shadow: 0 18px 38px -12px rgba(37, 99, 235, 0.22),
+                  0 0 24px -6px rgba(56, 189, 248, 0.28);
+    }
+
+    /* Animated SVG Flowchart Conduits */
+    .flowchart-conduit {
+      stroke-dasharray: 8 6;
+      animation: conduitPulse 1.6s linear infinite;
+    }
+    .flowchart-conduit-fast {
+      stroke-dasharray: 10 5;
+      animation: conduitPulse 0.85s linear infinite;
+    }
+    .flowchart-node-ring {
+      transform-origin: center;
+      transform-box: fill-box;
+      animation: nodeRingPulse 2.4s ease-in-out infinite;
+    }
+
+    main#mainWebpageView, #dedicatedSettingsView, header, footer {
+      position: relative;
+      z-index: 10;
+    }
+
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-white text-slate-900 selection:bg-blue-600 selection:text-white">
+
+  <!-- 2080 FUTURISTIC 3D PERSPECTIVE GRID & PARTICLE LATTICE CANVAS -->
+  <canvas id="bg3dCanvas" aria-hidden="true"></canvas>
+
+  <!-- INTERACTIVE GLOWING MOUSE SPOTLIGHT AURA & CYBERNETIC RETICLE -->
+  <div id="cursorGlowAura" aria-hidden="true"></div>
+  <div id="cursorReticleRing" aria-hidden="true"></div>
+
 
   <!-- SCROLL-LINKED TOP PROGRESS BAR -->
   <div class="fixed top-0 left-0 right-0 h-1 bg-blue-50 z-50">
@@ -365,7 +543,7 @@
   </div>
 
   <!-- LEFT 3-LINE MENU DRAWER -->
-  <div id="leftDrawerBackdrop" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs hidden opacity-0 transition-opacity duration-300"></div>
+  <div id="leftDrawerBackdrop" class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300"></div>
   <aside
     id="leftMenuDrawer"
     aria-label="Main Menu"
@@ -472,7 +650,7 @@
   </header>
 
   <!-- SIGN IN MODAL (Cross Icon) -->
-  <div id="loginModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
+  <div id="loginModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div>
@@ -498,7 +676,7 @@
   </div>
 
   <!-- ON-CHAIN PROOF MODAL (Cross Icon) -->
-  <div id="proofModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
+  <div id="proofModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-5">
       <div class="flex items-start justify-between border-b border-slate-100 pb-4">
         <div>
@@ -522,7 +700,7 @@
   </div>
 
   <!-- SECURITY CONFIRMATION MODAL FOR BILLING DEPOSIT (Cross Icon) -->
-  <div id="depositConfirmModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-xs hidden items-center justify-center p-4">
+  <div id="depositConfirmModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/55 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
       <div class="flex items-start justify-between border-b border-slate-100 pb-3">
         <div>
@@ -554,7 +732,7 @@
   </div>
 
   <!-- RAZORPAY CHECKOUT REDIRECT DIALOG (Cross Icon) -->
-  <div id="razorpayModal" role="dialog" aria-modal="true" class="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-4">
+  <div id="razorpayModal" role="dialog" aria-modal="true" class="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-5">
       <div class="flex items-start justify-between border-b border-slate-100 pb-3">
         <div class="flex items-center gap-2.5">
@@ -585,7 +763,7 @@
   </div>
 
   <!-- FAQ EXPLORER MODAL (Clean Title, Filter Button + 2-Column Popover with Checkboxes & Text Sort, Dropdown Questions) -->
-  <div id="faqExplorerModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs hidden items-center justify-center p-4">
+  <div id="faqExplorerModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4">
     <div class="bg-white border border-slate-200 rounded-2xl max-w-3xl w-full max-h-[88vh] flex flex-col shadow-2xl overflow-hidden">
       <!-- Header: ONLY "Frequently Asked Questions" + Cross Icon -->
       <div class="p-6 border-b border-slate-200 flex items-center justify-between gap-4 bg-white">
@@ -687,7 +865,7 @@
   <!-- Screenshots: Plan Cards + "Get <Plan> ->" Razorpay Trigger + "Terms   -->
   <!-- apply¹" + "View plan benefits ⊕" + Visual Bento Cards + Large Table) -->
   <!-- ===================================================================== -->
-  <div id="planShowcaseModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs hidden items-center justify-center p-3 sm:p-6">
+  <div id="planShowcaseModal" role="dialog" aria-modal="true" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-6">
     <div class="bg-white border border-blue-200 rounded-3xl max-w-5xl w-full max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
       <!-- Top Bar with Cross Icon -->
       <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-gradient-to-r from-blue-50 via-white to-sky-50">
@@ -709,7 +887,7 @@
         <div class="space-y-8">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Card 1: Ravelin Builder -->
-            <div class="rounded-3xl bg-white border border-slate-200 p-7 flex flex-col items-center text-center justify-between space-y-6 shadow-xs hover:border-blue-400 transition-all">
+            <div class="rounded-3xl bg-white border border-slate-200 p-7 flex flex-col items-center text-center justify-between space-y-6 shadow-sm hover:border-blue-400 transition-all">
               <div class="space-y-3 pt-4">
                 <h3 class="font-display text-2xl sm:text-3xl font-bold text-blue-600">Ravelin Builder</h3>
                 <div class="space-y-0.5">
@@ -806,7 +984,7 @@
           <!-- Floating Category Pill Bar -->
           <div class="flex justify-center">
             <div class="inline-flex flex-wrap items-center gap-1.5 p-1.5 rounded-full bg-slate-100 border border-slate-200 text-xs">
-              <span class="px-3 py-1 rounded-full bg-white text-blue-700 font-bold shadow-2xs">New · Nitro TEE</span>
+              <span class="px-3 py-1 rounded-full bg-white text-blue-700 font-bold shadow-sm">New · Nitro TEE</span>
               <button type="button" data-bento-filter="all" class="bento-filter-pill px-3.5 py-1.5 rounded-full bg-blue-600 text-white font-semibold cursor-pointer">All Benefits</button>
               <button type="button" data-bento-filter="execution" class="bento-filter-pill px-3.5 py-1.5 rounded-full text-slate-700 hover:bg-white font-medium cursor-pointer">Execution</button>
               <button type="button" data-bento-filter="firewall" class="bento-filter-pill px-3.5 py-1.5 rounded-full text-slate-700 hover:bg-white font-medium cursor-pointer">Firewall</button>
@@ -1015,7 +1193,7 @@
         </div>
 
         <!-- Lighter-Blue Earth Continent Sphere Card (Green Node in North America, Orange Node Across the Sea in Europe) -->
-        <div class="reveal-item reveal-scale-up bg-gradient-to-br from-blue-50/90 via-sky-50/60 to-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-md border border-blue-200 space-y-5">
+        <div class="reveal-item reveal-scale-up cyber-card bg-gradient-to-br from-blue-50/90 via-sky-50/60 to-white text-slate-900 rounded-2xl p-6 sm:p-8 shadow-md border border-blue-200 space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-blue-100 pb-4">
             <div>
               <div class="text-[11px] font-mono uppercase text-blue-700 font-semibold">Trans-Atlantic Continent Peering · Sub-Millisecond Ingress</div>
@@ -1039,7 +1217,7 @@
             </div>
 
             <div class="md:col-span-5 space-y-3.5">
-              <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-2xs space-y-2">
+              <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-sm space-y-2">
                 <div class="flex items-baseline justify-between">
                   <span class="font-mono text-2xl font-bold text-slate-900">1.08 ms</span>
                   <span class="font-mono text-xs font-semibold text-emerald-700">-97.7% Latency</span>
@@ -1050,7 +1228,7 @@
                 </div>
               </div>
 
-              <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-2xs space-y-2">
+              <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-sm space-y-2">
                 <div class="flex items-baseline justify-between">
                   <span class="font-mono text-2xl font-bold text-blue-700">90%</span>
                   <span class="font-mono text-xs font-semibold text-blue-600">200 ms Auction</span>
@@ -1061,7 +1239,7 @@
                 </div>
               </div>
 
-              <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-2xs space-y-1.5">
+              <div class="p-4 rounded-xl bg-white border border-blue-100 shadow-sm space-y-1.5">
                 <div class="flex items-baseline justify-between">
                   <span class="font-mono text-2xl font-bold text-slate-900">$0 Gas</span>
                   <span class="font-mono text-xs font-semibold text-blue-700">0.18 ms Check</span>
@@ -1074,7 +1252,7 @@
 
         <!-- 3 Compact Visual Pillar Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div class="reveal-item reveal-fade-up bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-xs">
+          <div class="reveal-item reveal-fade-up bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
             <div class="flex items-center justify-between">
               <h3 class="font-display text-base font-bold text-slate-900">Private Ingress</h3>
               <span class="font-mono text-xs font-semibold text-blue-700">0 Mempool</span>
@@ -1083,7 +1261,7 @@
               Direct fiber link to the sequencer ingress with zero public broadcast.
             </p>
           </div>
-          <div class="reveal-item reveal-fade-up delay-100 bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-xs">
+          <div class="reveal-item reveal-fade-up delay-100 bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
             <div class="flex items-center justify-between">
               <h3 class="font-display text-base font-bold text-slate-900">Pre-Simulated</h3>
               <span class="font-mono text-xs font-semibold text-emerald-700">$0 Reverts</span>
@@ -1092,7 +1270,7 @@
               Reverts and duplicate AI agent loops are dropped before costing gas.
             </p>
           </div>
-          <div class="reveal-item reveal-fade-up delay-200 bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-xs">
+          <div class="reveal-item reveal-fade-up delay-200 bg-white border border-slate-200 rounded-xl p-5 space-y-2 shadow-sm">
             <div class="flex items-center justify-between">
               <h3 class="font-display text-base font-bold text-slate-900">90% Rebates</h3>
               <span class="font-mono text-xs font-semibold text-blue-700">Auto-Payout</span>
@@ -1113,7 +1291,7 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="reveal-item reveal-fade-up bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+        <div class="reveal-item reveal-fade-up cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
           <div>
             <div class="text-xs font-semibold text-slate-500">Private Volume</div>
             <div class="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1">$7,473,107</div>
@@ -1122,7 +1300,7 @@
           <button type="button" data-proof="volume" class="open-proof-btn popup-btn w-full">Proof</button>
         </div>
 
-        <div class="reveal-item reveal-fade-up delay-100 bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+        <div class="reveal-item reveal-fade-up delay-100 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
           <div>
             <div class="text-xs font-semibold text-slate-500">Protected Trades</div>
             <div class="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1">218,049</div>
@@ -1131,7 +1309,7 @@
           <button type="button" data-proof="txs" class="open-proof-btn popup-btn w-full">Proof</button>
         </div>
 
-        <div class="reveal-item reveal-fade-up delay-200 bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+        <div class="reveal-item reveal-fade-up delay-200 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
           <div>
             <div class="text-xs font-semibold text-slate-500">Capital Saved</div>
             <div class="font-mono text-2xl sm:text-3xl font-bold text-blue-700 mt-1">$201,591</div>
@@ -1140,7 +1318,7 @@
           <button type="button" data-proof="mev" class="open-proof-btn popup-btn w-full">Proof</button>
         </div>
 
-        <div class="reveal-item reveal-fade-up bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+        <div class="reveal-item reveal-fade-up cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
           <div>
             <div class="text-xs font-semibold text-slate-500">User Rebate Share</div>
             <div class="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1">90%</div>
@@ -1149,7 +1327,7 @@
           <button type="button" data-proof="rebate" class="open-proof-btn popup-btn w-full">Proof</button>
         </div>
 
-        <div class="reveal-item reveal-fade-up delay-100 bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+        <div class="reveal-item reveal-fade-up delay-100 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
           <div>
             <div class="text-xs font-semibold text-slate-500">Active Wallets</div>
             <div class="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1">1,504</div>
@@ -1158,7 +1336,7 @@
           <button type="button" data-proof="searchers" class="open-proof-btn popup-btn w-full">Proof</button>
         </div>
 
-        <div class="reveal-item reveal-fade-up delay-200 bg-slate-50 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
+        <div class="reveal-item reveal-fade-up delay-200 cyber-card data-tilt-card bg-slate-50/95 border border-slate-200 rounded-xl p-5 flex flex-col justify-between space-y-4">
           <div>
             <div class="text-xs font-semibold text-slate-500">Protocol Revenue</div>
             <div class="font-mono text-2xl sm:text-3xl font-bold text-slate-900 mt-1">$18,217</div>
@@ -1169,7 +1347,7 @@
       </div>
 
       <!-- Static Graph 1 -->
-      <div class="reveal-item reveal-scale-up bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-4">
+      <div class="reveal-item reveal-scale-up cyber-card bg-white/95 border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 id="telemetryGraphTitle" class="font-display text-lg font-bold text-slate-900">30-Day Private Volume ($K) &amp; Rebates</h3>
@@ -1332,8 +1510,83 @@
           </div>
         </div>
 
-        <!-- Visual 4-Node Pipeline Result -->
-        <div id="simPipelineGrid" class="bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+        <!-- Visual 4-Node Pipeline Result + 2080 Animated SVG Circuit Flowchart & Live Telemetry Oscilloscope -->
+        <div id="simPipelineGrid" class="cyber-card bg-white/95 border border-blue-200 rounded-2xl p-6 space-y-5 shadow-sm">
+          <!-- 2080 Animated SVG Enclave Execution Flowchart -->
+          <div class="rounded-xl bg-gradient-to-r from-slate-950 via-blue-950 to-slate-950 p-4 border border-blue-500/40 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] font-mono">
+              <span class="text-sky-400 font-semibold flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                <span>NITRO TEE DETERMINISTIC EXECUTION CIRCUIT · LIVE FLOWCHART</span>
+              </span>
+              <span id="flowchartTelemetryBadge" class="text-blue-200">0.18 ms Guard · 0.94 ms Settlement</span>
+            </div>
+
+            <svg id="enclaveAnimatedFlowchart" viewBox="0 0 760 118" class="w-full h-24 sm:h-28 overflow-visible">
+              <defs>
+                <linearGradient id="conduitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#2563EB" />
+                  <stop offset="50%" stop-color="#38BDF8" />
+                  <stop offset="100%" stop-color="#10B981" />
+                </linearGradient>
+                <filter id="cyberGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+
+              <!-- Background Guide Tracks -->
+              <line x1="115" y1="56" x2="275" y2="56" stroke="#1E293B" stroke-width="4" />
+              <line x1="295" y1="56" x2="465" y2="56" stroke="#1E293B" stroke-width="4" />
+              <line x1="485" y1="56" x2="645" y2="56" stroke="#1E293B" stroke-width="4" />
+
+              <!-- Animated Laser Conduits -->
+              <line id="flowConduit1" x1="115" y1="56" x2="275" y2="56" stroke="url(#conduitGrad)" stroke-width="3" class="flowchart-conduit-fast" filter="url(#cyberGlow)" />
+              <line id="flowConduit2" x1="295" y1="56" x2="465" y2="56" stroke="url(#conduitGrad)" stroke-width="3" class="flowchart-conduit-fast" filter="url(#cyberGlow)" />
+              <line id="flowConduit3" x1="485" y1="56" x2="645" y2="56" stroke="url(#conduitGrad)" stroke-width="3" class="flowchart-conduit-fast" filter="url(#cyberGlow)" />
+
+              <!-- Node 1: ABI Check -->
+              <g transform="translate(85, 56)">
+                <circle r="34" fill="none" stroke="#38BDF8" stroke-width="1.2" stroke-dasharray="4 3" class="flowchart-node-ring" />
+                <rect x="-58" y="-26" width="116" height="52" rx="10" fill="#0F172A" stroke="#3B82F6" stroke-width="1.8" />
+                <text x="0" y="-6" text-anchor="middle" fill="#38BDF8" font-family="JetBrains Mono" font-size="9" font-weight="700">01 · ABI VERIFY</text>
+                <text id="svgNode1Text" x="0" y="12" text-anchor="middle" fill="#F8FAFC" font-family="JetBrains Mono" font-size="10" font-weight="600">Whitelisted</text>
+              </g>
+
+              <!-- Node 2: RocksDB Loop Guard -->
+              <g transform="translate(285, 56)">
+                <circle r="34" fill="none" stroke="#38BDF8" stroke-width="1.2" stroke-dasharray="4 3" class="flowchart-node-ring" />
+                <rect id="svgNode2Box" x="-62" y="-26" width="124" height="52" rx="10" fill="#0F172A" stroke="#38BDF8" stroke-width="1.8" />
+                <text x="0" y="-6" text-anchor="middle" fill="#38BDF8" font-family="JetBrains Mono" font-size="9" font-weight="700">02 · LOOP GUARD</text>
+                <text id="svgNode2Text" x="0" y="12" text-anchor="middle" fill="#34D399" font-family="JetBrains Mono" font-size="10" font-weight="600">0.18 ms Unique</text>
+              </g>
+
+              <!-- Node 3: ArbSys Gas Guard -->
+              <g transform="translate(475, 56)">
+                <circle r="34" fill="none" stroke="#38BDF8" stroke-width="1.2" stroke-dasharray="4 3" class="flowchart-node-ring" />
+                <rect x="-58" y="-26" width="116" height="52" rx="10" fill="#0F172A" stroke="#3B82F6" stroke-width="1.8" />
+                <text x="0" y="-6" text-anchor="middle" fill="#38BDF8" font-family="JetBrains Mono" font-size="9" font-weight="700">03 · ARBSYS CAP</text>
+                <text id="svgNode3Text" x="0" y="12" text-anchor="middle" fill="#F8FAFC" font-family="JetBrains Mono" font-size="10" font-weight="600">$0.004 L1+L2</text>
+              </g>
+
+              <!-- Node 4: 200ms Rebate Settlement -->
+              <g transform="translate(670, 56)">
+                <circle r="36" fill="none" stroke="#10B981" stroke-width="1.4" stroke-dasharray="5 3" class="flowchart-node-ring" />
+                <rect id="svgNode4Box" x="-64" y="-26" width="128" height="52" rx="10" fill="#0F172A" stroke="#10B981" stroke-width="2" />
+                <text x="0" y="-6" text-anchor="middle" fill="#34D399" font-family="JetBrains Mono" font-size="9" font-weight="700">04 · SEQUENCER</text>
+                <text id="svgNode4Text" x="0" y="12" text-anchor="middle" fill="#A7F3D0" font-family="JetBrains Mono" font-size="10" font-weight="700">+90% Rebate</text>
+              </g>
+            </svg>
+
+            <!-- Live 60FPS Enclave Telemetry Waveform Oscilloscope -->
+            <div class="flex items-center gap-3 pt-1 border-t border-slate-800/80">
+              <span class="text-[10px] font-mono text-slate-400 uppercase shrink-0">TEE Bus Wave</span>
+              <div class="relative h-8 flex-1 overflow-hidden rounded bg-slate-900/90 border border-slate-800">
+                <canvas id="enclaveWaveformCanvas" width="520" height="32" class="w-full h-full"></canvas>
+              </div>
+              <span id="enclaveWaveHzLabel" class="text-[10px] font-mono text-emerald-400 shrink-0">100 ms / 10 Hz Lock</span>
+            </div>
+          </div>
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
             <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1">
               <div class="font-mono text-[10px] uppercase text-slate-400">ABI Check</div>
@@ -1453,6 +1706,35 @@
           </div>
         </div>
 
+        <!-- 2080 Animated SVG WASM State Replay Flowchart + Progress Bar -->
+        <div class="rounded-xl bg-slate-950 p-3.5 border border-blue-500/30">
+          <svg viewBox="0 0 680 74" class="w-full h-16 overflow-visible">
+            <line x1="130" y1="37" x2="290" y2="37" stroke="#1E293B" stroke-width="3" />
+            <line x1="390" y1="37" x2="550" y2="37" stroke="#1E293B" stroke-width="3" />
+            <line x1="130" y1="37" x2="290" y2="37" stroke="#38BDF8" stroke-width="2.5" class="flowchart-conduit-fast" />
+            <line x1="390" y1="37" x2="550" y2="37" stroke="#10B981" stroke-width="2.5" class="flowchart-conduit-fast" />
+
+            <g transform="translate(80, 37)">
+              <rect x="-70" y="-20" width="140" height="40" rx="8" fill="#0F172A" stroke="#3B82F6" stroke-width="1.5" />
+              <text x="0" y="-3" text-anchor="middle" fill="#38BDF8" font-family="JetBrains Mono" font-size="8.5" font-weight="700">STEP 1 · BATCH INGRESS</text>
+              <text x="0" y="11" text-anchor="middle" fill="#F8FAFC" font-family="JetBrains Mono" font-size="9.5">Orbit Sequencer Feed</text>
+            </g>
+
+            <g transform="translate(340, 37)">
+              <circle r="26" fill="none" stroke="#38BDF8" stroke-width="1" stroke-dasharray="3 3" class="flowchart-node-ring" />
+              <rect x="-76" y="-20" width="152" height="40" rx="8" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5" />
+              <text x="0" y="-3" text-anchor="middle" fill="#38BDF8" font-family="JetBrains Mono" font-size="8.5" font-weight="700">STEP 2 · WAVM REPLAY</text>
+              <text x="0" y="11" text-anchor="middle" fill="#E0F2FE" font-family="JetBrains Mono" font-size="9.5">Deterministic 0.89 ms</text>
+            </g>
+
+            <g transform="translate(600, 37)">
+              <rect x="-70" y="-20" width="140" height="40" rx="8" fill="#0F172A" stroke="#10B981" stroke-width="1.5" />
+              <text x="0" y="-3" text-anchor="middle" fill="#34D399" font-family="JetBrains Mono" font-size="8.5" font-weight="700">STEP 3 · MERKLE ROOT</text>
+              <text x="0" y="11" text-anchor="middle" fill="#A7F3D0" font-family="JetBrains Mono" font-size="9.5">BoLD 100% Verified</text>
+            </g>
+          </svg>
+        </div>
+
         <!-- 3-Step Verification Progress Bar -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-[11px] font-mono text-slate-600">
@@ -1466,7 +1748,7 @@
       </div>
 
       <!-- Static Graph 2: Latency Benchmark -->
-      <div class="reveal-item reveal-scale-up bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
+      <div class="reveal-item reveal-scale-up cyber-card bg-white/95 border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
         <div class="flex items-center justify-between">
           <h3 class="font-display text-base font-bold text-slate-900">Median Response Latency (ms)</h3>
           <span class="font-mono text-xs font-semibold text-blue-700">1.08 ms vs. 48.2 ms</span>
@@ -1504,7 +1786,7 @@
         <p class="text-xs sm:text-sm text-slate-500 mt-0.5">100% of net protocol revenue buys $RVLN (0xfe2f…b167) on-chain</p>
       </div>
 
-      <div class="reveal-item reveal-scale-up bg-white border border-slate-200 rounded-2xl p-6 shadow-xs space-y-3">
+      <div class="reveal-item reveal-scale-up cyber-card bg-white/95 border border-slate-200 rounded-2xl p-6 shadow-sm space-y-3">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h3 class="font-display text-base font-bold text-slate-900">Cumulative $RVLN Purchased (430,215 RVLN)</h3>
           <span class="font-mono text-xs font-semibold text-blue-700">$17,805.08 Total</span>
@@ -1514,7 +1796,7 @@
         </div>
       </div>
 
-      <div class="reveal-item reveal-fade-up bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-xs">
+      <div class="reveal-item reveal-fade-up bg-white border border-slate-200 rounded-2xl p-6 space-y-4 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <h3 class="font-display text-base font-bold text-slate-900">On-Chain Audit Ledger</h3>
           <div class="flex flex-wrap gap-2">
@@ -1585,7 +1867,7 @@
           <button type="button" data-tier-card="Builder" class="tier-action-btn open-showcase-btn popup-btn w-full">Downgrade</button>
         </div>
 
-        <div class="reveal-item reveal-fade-up delay-200 bg-blue-50/70 border-2 border-blue-600 rounded-2xl p-5 flex flex-col justify-between space-y-5 shadow-xs">
+        <div class="reveal-item reveal-fade-up delay-200 bg-blue-50/70 border-2 border-blue-600 rounded-2xl p-5 flex flex-col justify-between space-y-5 shadow-sm">
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
               <h3 class="font-display text-base font-bold text-slate-900">Pro</h3>
@@ -1686,7 +1968,7 @@
     <!-- =================================================================== -->
     <div id="editPage-profile" class="edit-page-pane space-y-6">
       <!-- 1. Avatar, Identity & Locale Banner -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
           <div class="flex items-center gap-4">
             <div id="profileAvatarPreview" class="w-16 h-16 rounded-2xl bg-blue-600 text-white font-display font-bold text-xl flex items-center justify-center shadow-sm">
@@ -1851,7 +2133,7 @@
     <!-- =================================================================== -->
     <!-- PAGE 2: API KEYS                                                    -->
     <!-- =================================================================== -->
-    <div id="editPage-apikeys" class="edit-page-pane hidden bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+    <div id="editPage-apikeys" class="edit-page-pane hidden bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
       <div>
         <h1 class="font-display text-2xl font-bold text-slate-900">API Keys</h1>
         <p class="text-xs text-slate-500 mt-1">Private sequencer credentials and Holding Pen webhooks</p>
@@ -1880,7 +2162,7 @@
     <!-- PAGE 3: FIREWALL CONTROL CENTER (Labels Beside Inputs, No Steppers) -->
     <!-- =================================================================== -->
     <div id="editPage-firewall" class="edit-page-pane hidden space-y-6">
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-mono text-[11px] font-semibold">AWS Nitro Enclave Policy</span>
@@ -1996,7 +2278,7 @@
     <!-- =================================================================== -->
     <!-- PAGE 4: WALLET                                                      -->
     <!-- =================================================================== -->
-    <div id="editPage-rebates" class="edit-page-pane hidden bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+    <div id="editPage-rebates" class="edit-page-pane hidden bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
       <div>
         <h1 class="font-display text-2xl font-bold text-slate-900">Wallet</h1>
         <p class="text-xs text-slate-500 mt-1">Destination wallet and settlement token for 90% rebates</p>
@@ -2025,7 +2307,7 @@
     <!-- PAGE 5: PLANS SUBPAGE (Mirrors the Showcase + Opens Showcase Modal) -->
     <!-- =================================================================== -->
     <div id="editPage-plans" class="edit-page-pane hidden space-y-8">
-      <div class="bg-gradient-to-br from-blue-50 via-white to-sky-50 border border-blue-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-xs">
+      <div class="bg-gradient-to-br from-blue-50 via-white to-sky-50 border border-blue-200 rounded-3xl p-6 sm:p-8 space-y-6 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-mono text-[11px] font-semibold">Ravelin One</span>
@@ -2078,7 +2360,7 @@
       </div>
 
       <!-- Large-Padding Feature Comparison Table -->
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-5 shadow-xs">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-5 shadow-sm">
         <h2 class="font-display text-2xl font-bold text-slate-900">Plan Feature Comparison</h2>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-sm sm:text-base">
@@ -2102,7 +2384,7 @@
     <!-- "Deposit"; Clicking "Deposit" Opens Security Confirmation Dialog)   -->
     <!-- =================================================================== -->
     <div id="editPage-billing" class="edit-page-pane hidden space-y-6">
-      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xs">
+      <div class="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <div class="flex items-center gap-2">
@@ -3088,7 +3370,7 @@ agent_wallet = RavelinFirewall.wrap(w3, api_key="ordo_live_...", chain_id=4663)`
           row.className = 'p-3.5 rounded-xl bg-white border border-slate-200 flex flex-wrap items-center justify-between gap-2 ' + (isFifthFaded ? 'wasm-faded-fifth' : '');
           row.innerHTML =
             '<div>' +
-              '<span class="font-bold text-slate-900">Block #' + item.block.toLocaleString() + '</span>' +
+              '<span class="font-bold text-slate-900">Block #' + item.block.toLocaleString("en-US") + '</span>' +
               '<span class="text-slate-400 ml-2">· Root ' + item.root + '</span>' +
             '</div>' +
             '<div class="flex items-center gap-3">' +
@@ -3103,7 +3385,7 @@ agent_wallet = RavelinFirewall.wrap(w3, api_key="ordo_live_...", chain_id=4663)`
           row.className = 'p-3.5 rounded-xl bg-white border border-slate-200 flex flex-wrap items-center justify-between gap-2';
           row.innerHTML =
             '<div>' +
-              '<span class="font-bold text-slate-900">Block #' + item.block.toLocaleString() + '</span>' +
+              '<span class="font-bold text-slate-900">Block #' + item.block.toLocaleString("en-US") + '</span>' +
               '<span class="text-slate-400 ml-2">· Root ' + item.root + '</span>' +
             '</div>' +
             '<div class="flex items-center gap-3">' +
@@ -3140,11 +3422,11 @@ agent_wallet = RavelinFirewall.wrap(w3, api_key="ordo_live_...", chain_id=4663)`
             rtt: rtt,
             age: 'Just now'
           });
-          document.getElementById('wasmLiveBlockLabel').textContent = '#' + state.wasmLatestBlock.toLocaleString();
+          document.getElementById('wasmLiveBlockLabel').textContent = '#' + state.wasmLatestBlock.toLocaleString("en-US");
           document.getElementById('wasmLiveDurationLabel').textContent = rtt;
           narrative.textContent = '1. Fetch Sequencer Batch → 2. Execute WAVM State Transition → 3. Compare Output Merkle Root';
           renderWasmHistory();
-          triggerSnackbar('WASM Check', 'Verified Block #' + state.wasmLatestBlock.toLocaleString() + ' state assertion.');
+          triggerSnackbar('WASM Check', 'Verified Block #' + state.wasmLatestBlock.toLocaleString("en-US") + ' state assertion.');
         }, 280);
       });
 
@@ -3193,12 +3475,18 @@ agent_wallet = RavelinFirewall.wrap(w3, api_key="ordo_live_...", chain_id=4663)`
           skel.classList.add('hidden');
           grid.classList.remove('hidden');
           document.getElementById('st1Title').textContent = side + ' ' + state.selectedPool.split(' (')[0];
+          const svgN1 = document.getElementById('svgNode1Text');
+          const svgN2 = document.getElementById('svgNode2Text');
+          const svgN4 = document.getElementById('svgNode4Text');
+          if (svgN1) svgN1.textContent = state.selectedPool.split(' (')[0];
+          if (svgN2) svgN2.textContent = (state.simMode === 'loop' || state.selectedPool.indexOf('Unlisted') !== -1) ? 'LOOP BLOCKED' : '0.18 ms Unique';
+          if (svgN4) svgN4.textContent = (state.simMode === 'loop') ? '$0 Gas Saved' : ((state.simMode === 'hold' || amt >= 10000) ? 'Holding Pen' : '+$' + (amt * 0.0018).toFixed(2) + ' Rebate');
           if (state.simMode === 'loop' || state.selectedPool.indexOf('Unlisted') !== -1) {
             document.getElementById('st2Status').textContent = 'Blocked';
             document.getElementById('st2Status').className = 'font-mono text-red-600 font-semibold';
             document.getElementById('st4Status').textContent = '$0 Gas';
             document.getElementById('simOutcomeHeading').textContent = 'Duplicate Retry Loop Refused';
-            document.getElementById('simOutcomeValue').textContent = 'Saved $' + amt.toLocaleString();
+            document.getElementById('simOutcomeValue').textContent = 'Saved $' + amt.toLocaleString("en-US");
             triggerSnackbar('Simulator', 'Blocked duplicate loop at $0 gas.');
           } else if (state.simMode === 'hold' || amt >= 10000) {
             const holdId = 'HP-' + Math.floor(9050 + Math.random() * 90);
@@ -3551,7 +3839,7 @@ agent_wallet = RavelinFirewall.wrap(w3, api_key="ordo_live_...", chain_id=4663)`
         const yr = (reb + gas) * 12;
         document.getElementById('calcMonthlyRebate').textContent = '+$' + reb.toFixed(0) + '/mo';
         document.getElementById('calcMonthlyGas').textContent = '+$' + gas.toFixed(0) + '/mo';
-        document.getElementById('calcYearlyTotal').textContent = '+$' + yr.toLocaleString(undefined, { maximumFractionDigits: 0 }) + '/yr';
+        document.getElementById('calcYearlyTotal').textContent = '+$' + yr.toLocaleString("en-US", { maximumFractionDigits: 0 }) + '/yr';
       }
       rebateVolInput.addEventListener('input', function () {
         updateRebateCalc(Math.max(100, parseInt(rebateVolInput.value, 10) || 0));
@@ -3578,7 +3866,7 @@ agent_wallet = RavelinFirewall.wrap(w3, api_key="ordo_live_...", chain_id=4663)`
           const d = document.createElement('div');
           d.className = 'p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
           d.innerHTML =
-            '<div class="font-mono text-xs"><strong class="text-blue-900">' + item.id + '</strong> · ' + item.pair + ' · <strong>$' + item.amountUsd.toLocaleString() + '</strong></div>' +
+            '<div class="font-mono text-xs"><strong class="text-blue-900">' + item.id + '</strong> · ' + item.pair + ' · <strong>$' + item.amountUsd.toLocaleString("en-US") + '</strong></div>' +
             '<div class="flex gap-2">' +
               '<button type="button" data-hp-approve="' + item.id + '" class="btn-primary-rounded">Approve</button>' +
               '<button type="button" data-hp-drop="' + item.id + '" class="popup-btn text-red-600">Drop</button>' +
@@ -3688,6 +3976,205 @@ agent_wallet = RavelinFirewall.wrap(w3, api_key="ordo_live_...", chain_id=4663)`
       document.getElementById('copyCodeSnippetBtn').addEventListener('click', function () {
         triggerSnackbar('SDK', 'Copied code snippet.');
       });
+
+
+      // ===================================================================
+      // 11. 2080 ARGON-4 3D BACKGROUND LATTICE, GLOWING CURSOR & WAVEFORM
+      // ===================================================================
+      (function initArgon2080VisualEngine() {
+        const bgCanvas = document.getElementById('bg3dCanvas');
+        const aura = document.getElementById('cursorGlowAura');
+        const reticle = document.getElementById('cursorReticleRing');
+
+        let mouseX = window.innerWidth * 0.5;
+        let mouseY = window.innerHeight * 0.35;
+        let lerpX = mouseX;
+        let lerpY = mouseY;
+
+        window.addEventListener('mousemove', function (e) {
+          mouseX = e.clientX;
+          mouseY = e.clientY;
+
+          // Update card-local --mouse-x and --mouse-y for holographic border & surface spotlight
+          const card = e.target.closest('.cyber-card');
+          if (card) {
+            const r = card.getBoundingClientRect();
+            card.style.setProperty('--mouse-x', (e.clientX - r.left) + 'px');
+            card.style.setProperty('--mouse-y', (e.clientY - r.top) + 'px');
+          }
+
+          // Expand reticle on interactive elements
+          if (reticle) {
+            const interactive = e.target.closest('button, a, input, select, .tooltip-host, .cyber-card');
+            reticle.classList.toggle('is-hovering', Boolean(interactive));
+          }
+        }, { passive: true });
+
+        // 3D Tilt effect on .data-tilt-card scorecards
+        document.querySelectorAll('.data-tilt-card').forEach(function (card) {
+          card.addEventListener('mousemove', function (e) {
+            const r = card.getBoundingClientRect();
+            const relX = (e.clientX - r.left) / r.width - 0.5;
+            const relY = (e.clientY - r.top) / r.height - 0.5;
+            card.style.transform = 'perspective(700px) rotateX(' + (-relY * 6).toFixed(2) + 'deg) rotateY(' + (relX * 6).toFixed(2) + 'deg) translateY(-3px)';
+          });
+          card.addEventListener('mouseleave', function () {
+            card.style.transform = '';
+          });
+        });
+
+        // 3D Background Perspective Cyber-Grid & Floating Holographic Nodes
+        if (bgCanvas) {
+          const ctx = bgCanvas.getContext('2d');
+          let w = (bgCanvas.width = window.innerWidth);
+          let h = (bgCanvas.height = window.innerHeight);
+
+          window.addEventListener('resize', function () {
+            w = bgCanvas.width = window.innerWidth;
+            h = bgCanvas.height = window.innerHeight;
+          });
+
+          const nodes = [];
+          const NODE_COUNT = 36;
+          for (let i = 0; i < NODE_COUNT; i++) {
+            nodes.push({
+              x: Math.random() * w,
+              y: Math.random() * h,
+              z: 0.3 + Math.random() * 0.9,
+              vx: (Math.random() - 0.5) * 0.45,
+              vy: (Math.random() - 0.5) * 0.45
+            });
+          }
+
+          let gridPhase = 0;
+          function renderBg3D() {
+            lerpX += (mouseX - lerpX) * 0.14;
+            lerpY += (mouseY - lerpY) * 0.14;
+
+            if (aura) {
+              aura.style.transform = 'translate3d(' + lerpX.toFixed(1) + 'px, ' + lerpY.toFixed(1) + 'px, 0)';
+            }
+            if (reticle) {
+              reticle.style.transform = 'translate3d(' + mouseX.toFixed(1) + 'px, ' + mouseY.toFixed(1) + 'px, 0)';
+            }
+
+            ctx.clearRect(0, 0, w, h);
+
+            // Perspective 3D Floor & Ceiling Cyber-Grid
+            const camOffsetX = ((lerpX / w) - 0.5) * 60;
+            const horizonY = h * 0.46 + ((lerpY / h) - 0.5) * 35;
+
+            ctx.strokeStyle = 'rgba(37, 99, 235, 0.055)';
+            ctx.lineWidth = 1;
+            const numRays = 16;
+            for (let i = -numRays; i <= numRays; i++) {
+              const topX = w * 0.5 + i * 45 - camOffsetX * 0.4;
+              const botX = w * 0.5 + i * 165 + camOffsetX * 1.1;
+              ctx.beginPath();
+              ctx.moveTo(topX, horizonY);
+              ctx.lineTo(botX, h);
+              ctx.stroke();
+            }
+
+            gridPhase = (gridPhase + 0.008) % 1;
+            for (let j = 0; j < 8; j++) {
+              const p = (j + gridPhase) / 8;
+              const yPos = horizonY + Math.pow(p, 1.85) * (h - horizonY);
+              ctx.strokeStyle = 'rgba(56, 189, 248, ' + (p * 0.09).toFixed(3) + ')';
+              ctx.beginPath();
+              ctx.moveTo(0, yPos);
+              ctx.lineTo(w, yPos);
+              ctx.stroke();
+            }
+
+            // Floating 3D Telemetry Nodes & Proximity Neural Links
+            for (let i = 0; i < nodes.length; i++) {
+              const n = nodes[i];
+              n.x += n.vx * n.z;
+              n.y += n.vy * n.z;
+
+              // Gentle attraction/repulsion to cursor
+              const dxM = lerpX - n.x;
+              const dyM = lerpY - n.y;
+              const distM = Math.hypot(dxM, dyM);
+              if (distM < 220 && distM > 1) {
+                n.x += (dxM / distM) * 0.35;
+                n.y += (dyM / distM) * 0.35;
+              }
+
+              if (n.x < 0) n.x = w;
+              if (n.x > w) n.x = 0;
+              if (n.y < 0) n.y = h;
+              if (n.y > h) n.y = 0;
+
+              // Connect to nearby nodes
+              for (let j = i + 1; j < nodes.length; j++) {
+                const m = nodes[j];
+                const d = Math.hypot(n.x - m.x, n.y - m.y);
+                if (d < 145) {
+                  const alpha = (1 - d / 145) * 0.14;
+                  ctx.strokeStyle = 'rgba(37, 99, 235, ' + alpha.toFixed(3) + ')';
+                  ctx.lineWidth = 1;
+                  ctx.beginPath();
+                  ctx.moveTo(n.x, n.y);
+                  ctx.lineTo(m.x, m.y);
+                  ctx.stroke();
+                }
+              }
+
+              // Connect to cursor if close
+              if (distM < 185) {
+                const cAlpha = (1 - distM / 185) * 0.28;
+                ctx.strokeStyle = 'rgba(14, 165, 233, ' + cAlpha.toFixed(3) + ')';
+                ctx.lineWidth = 1.2;
+                ctx.beginPath();
+                ctx.moveTo(n.x, n.y);
+                ctx.lineTo(lerpX, lerpY);
+                ctx.stroke();
+              }
+
+              ctx.fillStyle = distM < 185 ? 'rgba(14, 165, 233, 0.55)' : 'rgba(37, 99, 235, 0.28)';
+              ctx.beginPath();
+              ctx.arc(n.x, n.y, 1.8 * n.z, 0, Math.PI * 2);
+              ctx.fill();
+            }
+
+            requestAnimationFrame(renderBg3D);
+          }
+          requestAnimationFrame(renderBg3D);
+        }
+
+        // Live 60FPS Enclave Waveform Oscilloscope Canvas (#enclaveWaveformCanvas)
+        const waveCanvas = document.getElementById('enclaveWaveformCanvas');
+        if (waveCanvas) {
+          const wCtx = waveCanvas.getContext('2d');
+          let phase = 0;
+          function drawWaveform() {
+            const W = waveCanvas.width;
+            const H = waveCanvas.height;
+            wCtx.clearRect(0, 0, W, H);
+
+            const isLoop = state.simMode === 'loop';
+            const isHold = state.simMode === 'hold';
+            const strokeCol = isLoop ? '#EF4444' : (isHold ? '#F59E0B' : '#38BDF8');
+
+            wCtx.strokeStyle = strokeCol;
+            wCtx.lineWidth = 2;
+            wCtx.beginPath();
+            for (let x = 0; x < W; x += 4) {
+              const freq = isLoop ? 0.085 : 0.045;
+              const amp = isLoop ? 11 : 8;
+              const y = H / 2 + Math.sin(x * freq + phase) * amp * Math.sin(x * 0.012 - phase * 0.5);
+              if (x === 0) wCtx.moveTo(x, y);
+              else wCtx.lineTo(x, y);
+            }
+            wCtx.stroke();
+            phase += 0.14;
+            requestAnimationFrame(drawWaveform);
+          }
+          requestAnimationFrame(drawWaveform);
+        }
+      })();
 
       syncAuthUI();
       renderHoldingPen();
