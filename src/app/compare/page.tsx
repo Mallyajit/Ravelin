@@ -173,7 +173,7 @@ export default function ComparePage() {
                   onClick={() => setSelectedBlock(a)}
                   className="hover:bg-blue-50/50 cursor-pointer transition-colors"
                 >
-                  <td className="px-6 py-4 font-bold text-slate-900">#{a.blockNumber.toLocaleString()}</td>
+                  <td className="px-6 py-4 font-bold text-slate-900" suppressHydrationWarning>#{a.blockNumber.toLocaleString('en-US')}</td>
                   <td className="px-6 py-4 text-slate-500">{a.timeAgo}</td>
                   <td className="px-6 py-4">
                     <span className="text-slate-700 truncate max-w-[170px] inline-block">
@@ -202,8 +202,8 @@ export default function ComparePage() {
       {selectedBlock && (
         <div className="p-6 rounded-3xl bg-blue-50 border border-blue-200 space-y-4 font-mono text-xs">
           <div className="flex items-center justify-between">
-            <div className="text-blue-800 font-bold">
-              BLOCK #{selectedBlock.blockNumber.toLocaleString()} VERIFICATION PROOF
+            <div className="text-blue-800 font-bold" suppressHydrationWarning>
+              BLOCK #{selectedBlock.blockNumber.toLocaleString('en-US')} VERIFICATION PROOF
             </div>
             <button
               type="button"

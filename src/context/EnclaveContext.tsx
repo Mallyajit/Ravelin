@@ -37,7 +37,48 @@ export interface AuditLogItem {
 }
 
 interface EnclaveContextType {
+  // Auth state
+  loggedIn: boolean;
+  userName: string;
+  userEmail: string;
+  activePlan: string;
+  setActivePlan: (plan: string) => void;
+  escrowUsd: number;
+  setEscrowUsd: React.Dispatch<React.SetStateAction<number>>;
+  enclavePaused: boolean;
+  setEnclavePaused: React.Dispatch<React.SetStateAction<boolean>>;
+  login: (email?: string, wallet?: string) => void;
+  logout: () => void;
+
+  // Modals state
+  isPlanShowcaseOpen: boolean;
+  openPlanShowcaseModal: (selectedTier?: string) => void;
+  closePlanShowcaseModal: () => void;
+  isRazorpayModalOpen: boolean;
+  razorpayPlanTitle: string;
+  openRazorpayModal: (planTitle: string) => void;
+  closeRazorpayModal: () => void;
+  isFaqModalOpen: boolean;
+  openFaqModal: () => void;
+  closeFaqModal: () => void;
+  isLoginModalOpen: boolean;
+  openLoginModal: () => void;
+  closeLoginModal: () => void;
+  isDepositModalOpen: boolean;
+  openDepositModal: () => void;
+  closeDepositModal: () => void;
+  confirmDeposit: (amount: number) => void;
+  isLeftDrawerOpen: boolean;
+  openLeftDrawer: () => void;
+  closeLeftDrawer: () => void;
+
+  // Toast / Snackbar
+  toastMsg: { title: string; desc: string } | null;
+  triggerSnackbar: (title: string, desc: string) => void;
+
+  // Original enclave fields for compatibility
   walletAddress: string;
+  setWalletAddress: (addr: string) => void;
   walletProvider: string;
   isWalletModalOpen: boolean;
   setWalletModalOpen: (open: boolean) => void;
@@ -78,7 +119,107 @@ interface EnclaveContextType {
 const EnclaveContext = createContext<EnclaveContextType | undefined>(undefined);
 
 export function EnclaveProvider({ children }: { children: React.ReactNode }) {
-  const [walletAddress, setWalletAddress] = useState("0x71C9...89A2");
+  // Auth state
+  const [loggedIn, setLoggedIn] = useState(true);
+  const [userName, setUserName] = useState("Alex Chen");
+  const [userEmail, setUserEmail] = useState("alex.chen@quantumfund.io");
+  const [activePlan, setActivePlan] = useState("Pro");
+  const [escrowUsd, setEscrowUsd] = useState(420);
+  const [enclavePaused, setEnclavePaused] = useState(false);
+
+  // Modals state
+  const [isPlanShowcaseOpen, setPlanShowcaseOpen] = useState(false);
+  const [isRazorpayModalOpen, setRazorpayModalOpen] = useState(false);
+  const [razorpayPlanTitle, setRazorpayPlanTitle] = useState("Ravelin Pro ($199/mo)");
+  const [isFaqModalOpen, setFaqModalOpen] = useState(false);
+  const [isLoginModalOpen, setLoginModalOpen] = useState(false);
+  const [isDepositModalOpen, setDepositModalOpen] = useState(false);
+  const [isLeftDrawerOpen, setLeftDrawerOpen] = useState(false);
+
+  // Toast / Snackbar
+  const [toastMsg, setToastMsg] = useState<{ title: string; desc: string } | null>(null);
+
+  const triggerSnackbar = (title: string, desc: string) => {
+    setToastMsg({ title, desc });
+    setTimeout(() => {
+      setToastMsg((cur) => (cur?.desc === desc ? null : cur));
+    }, 3800);
+  };
+
+  const login = (email = "alex.chen@quantumfund.io", wallet = "0x71C9a84F2b9011e889A2") => {
+    setLoggedIn(true);
+    setUserName("Alex Chen");
+    setUserEmail(email);
+    setWalletAddress(wallet);
+    setLoginModalOpen(false);
+    triggerSnackbar("Authentication", `Signed in as Alex Chen (${wallet.slice(0, 6)}...${wallet.slice(-4)})`);
+  };
+
+  const logout = () => {
+    setLoggedIn(false);
+    triggerSnackbar("Authentication", "Signed out successfully.");
+  };
+
+  const openPlanShowcaseModal = (selectedTier?: string) => {
+    if (selectedTier) {
+      setRazorpayPlanTitle(selectedTier);
+    }
+    setPlanShowcaseOpen(true);
+  };
+
+  const closePlanShowcaseModal = () => {
+    setPlanShowcaseOpen(false);
+  };
+
+  const openRazorpayModal = (planTitle: string) => {
+    setRazorpayPlanTitle(planTitle);
+    setRazorpayModalOpen(true);
+  };
+
+  const closeRazorpayModal = () => {
+    setRazorpayModalOpen(false);
+  };
+
+  const openFaqModal = () => {
+    setFaqModalOpen(true);
+  };
+
+  const closeFaqModal = () => {
+    setFaqModalOpen(false);
+  };
+
+  const openLoginModal = () => {
+    setLoginModalOpen(true);
+  };
+
+  const closeLoginModal = () => {
+    setLoginModalOpen(false);
+  };
+
+  const openDepositModal = () => {
+    setDepositModalOpen(true);
+  };
+
+  const closeDepositModal = () => {
+    setDepositModalOpen(false);
+  };
+
+  const confirmDeposit = (amount: number) => {
+    setEscrowUsd((prev) => prev + amount);
+    setDepositModalOpen(false);
+    triggerSnackbar("Billing Escrow", `Deposited +$${amount} USDG into Nitro billing escrow. New Balance: $${escrowUsd + amount}.`);
+  };
+
+  const openLeftDrawer = () => {
+    setLeftDrawerOpen(true);
+  };
+
+  const closeLeftDrawer = () => {
+    setLeftDrawerOpen(false);
+  };
+
+  // Original enclave fields
+  const [walletAddress, setWalletAddress] = useState("0x71C9a84F2b9011e889A2");
   const [walletProvider, setWalletProvider] = useState("Rabby Wallet");
   const [isWalletModalOpen, setWalletModalOpen] = useState(false);
   const [billingTier, setBillingTier] = useState("Production Swarm (Chain 4663)");
@@ -384,7 +525,41 @@ export function EnclaveProvider({ children }: { children: React.ReactNode }) {
   return (
     <EnclaveContext.Provider
       value={{
+        loggedIn,
+        userName,
+        userEmail,
+        activePlan,
+        setActivePlan,
+        escrowUsd,
+        setEscrowUsd,
+        enclavePaused,
+        setEnclavePaused,
+        login,
+        logout,
+        isPlanShowcaseOpen,
+        openPlanShowcaseModal,
+        closePlanShowcaseModal,
+        isRazorpayModalOpen,
+        razorpayPlanTitle,
+        openRazorpayModal,
+        closeRazorpayModal,
+        isFaqModalOpen,
+        openFaqModal,
+        closeFaqModal,
+        isLoginModalOpen,
+        openLoginModal,
+        closeLoginModal,
+        isDepositModalOpen,
+        openDepositModal,
+        closeDepositModal,
+        confirmDeposit,
+        isLeftDrawerOpen,
+        openLeftDrawer,
+        closeLeftDrawer,
+        toastMsg,
+        triggerSnackbar,
         walletAddress,
+        setWalletAddress,
         walletProvider,
         isWalletModalOpen,
         setWalletModalOpen,

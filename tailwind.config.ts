@@ -9,23 +9,14 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      colors: {
-        obsidian: "#0A0A0C",
-        surface: "#111114",
-        crimson: "#FF2A2A",
-        amber: "#FF6B2B",
-        emerald: "#00FFAA",
-        neonblue: "#0052FF",
-        allow: "#00FF66",
-        deny: "#FF0000",
-        override: "#FFB000",
-      },
       fontFamily: {
-        sans: ["Inter", "sans-serif"],
-        mono: ["JetBrains Mono", "monospace"],
+        sans: ['"Plus Jakarta Sans"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['"Bricolage Grotesque"', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'monospace'],
       },
     },
   },
   plugins: [],
 };
+
 export default config;
